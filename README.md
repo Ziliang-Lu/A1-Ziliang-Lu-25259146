@@ -1,4 +1,4 @@
-# A1-Ziliang-Lu — PROG2004 Assessment 1
+# A1-Ziliang-Lu-25259146 — PROG2004 Assessment 1
 
 Health appointment system, implemented in Java with object-oriented design
 concepts from Modules 1–3 of PROG2004 Object Oriented Programming.
@@ -11,7 +11,7 @@ the results to the console.
 ## Structure
 
 ```
-A1-Ziliang-Lu/
+A1-Ziliang-Lu-25259146/
 ├── src/
 │   ├── AssignmentOne.java         entry point: main() and the demonstration
 │   ├── HealthProfessional.java    abstract parent of every professional type
