@@ -61,6 +61,21 @@ The design follows the patterns from the Modules 1–3 tutorials:
   delegates with `this(...)` to the full one and supplies sensible defaults for
   the working days, stored as `private static final` constants.
 
+## Code style
+
+One style is used everywhere; it never varies between files:
+
+- opening braces stay on the same line as the declaration (K&R)
+- four spaces per indent level, never tabs
+- every class and every method carries a Javadoc comment
+- one blank line between members; files end with exactly one newline
+- lines never exceed 100 columns
+- identifiers are written in full words, never abbreviated (`identifier`,
+  not `id`; `working days`, not `wd`)
+- method names begin with a verb (`createHealthProfessionals`,
+  `buildWorkingDays`, `displayHealthProfessionals`, `describeWorkingDays`)
+- fields are `private` and camelCase; constants are `UPPER_CASE`
+
 ## Build and run
 
 Compile and run from the project root with JDK 26:

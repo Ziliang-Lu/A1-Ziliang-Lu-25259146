@@ -8,7 +8,7 @@ import java.util.ArrayList;
  * shared by every health professional.</p>
  *
  * @author Ziliang Lu (25259146)
- * @version 1.0
+ * @version 1.1
  */
 public class Surgeon extends HealthProfessional implements Prescribable {
 
@@ -20,26 +20,26 @@ public class Surgeon extends HealthProfessional implements Prescribable {
     /**
      * Creates a surgeon who works the default weekdays.
      *
-     * @param id      the professional's identifier, digits only
-     * @param name    the professional's name
+     * @param identifier the professional's identifier, digits only
+     * @param name the professional's name
      * @param theatre the operating theatre, for example "Theatre 2"
      */
-    public Surgeon(String id, String name, String theatre) {
-        super(id, name);
+    public Surgeon(String identifier, String name, String theatre) {
+        super(identifier, name);
         this.theatre = cleanText(theatre, DEFAULT_THEATRE);
     }
 
     /**
      * Creates a surgeon who works the given weekdays.
      *
-     * @param id          the professional's identifier, digits only
-     * @param name        the professional's name
+     * @param identifier the professional's identifier, digits only
+     * @param name the professional's name
      * @param workingDays the weekdays this professional works
-     * @param theatre     the operating theatre, for example "Theatre 2"
+     * @param theatre the operating theatre, for example "Theatre 2"
      */
-    public Surgeon(String id, String name, ArrayList<String> workingDays,
+    public Surgeon(String identifier, String name, ArrayList<String> workingDays,
                    String theatre) {
-        super(id, name, workingDays);
+        super(identifier, name, workingDays);
         this.theatre = cleanText(theatre, DEFAULT_THEATRE);
     }
 
@@ -76,7 +76,7 @@ public class Surgeon extends HealthProfessional implements Prescribable {
     /**
      * {@inheritDoc}
      *
-     * @param medication  the name of the medication
+     * @param medication the name of the medication
      * @param patientName the name of the patient receiving it
      * @return a message describing the prescription
      */
@@ -89,7 +89,7 @@ public class Surgeon extends HealthProfessional implements Prescribable {
     /**
      * Performs an operation on a patient.
      *
-     * @param procedure   the name of the procedure
+     * @param procedure the name of the procedure
      * @param patientName the name of the patient
      * @return a message describing the operation
      */

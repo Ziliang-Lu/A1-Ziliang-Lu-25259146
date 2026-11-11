@@ -9,7 +9,7 @@ import java.util.ArrayList;
  * professional.</p>
  *
  * @author Ziliang Lu (25259146)
- * @version 1.0
+ * @version 1.1
  */
 public class Specialist extends HealthProfessional implements Prescribable {
 
@@ -21,26 +21,26 @@ public class Specialist extends HealthProfessional implements Prescribable {
     /**
      * Creates a specialist who works the default weekdays.
      *
-     * @param id        the professional's identifier, digits only
-     * @param name      the professional's name
+     * @param identifier the professional's identifier, digits only
+     * @param name the professional's name
      * @param specialty the area of medicine, for example "Paediatrician"
      */
-    public Specialist(String id, String name, String specialty) {
-        super(id, name);
+    public Specialist(String identifier, String name, String specialty) {
+        super(identifier, name);
         this.specialty = cleanText(specialty, DEFAULT_SPECIALTY);
     }
 
     /**
      * Creates a specialist who works the given weekdays.
      *
-     * @param id          the professional's identifier, digits only
-     * @param name        the professional's name
+     * @param identifier the professional's identifier, digits only
+     * @param name the professional's name
      * @param workingDays the weekdays this professional works
-     * @param specialty   the area of medicine, for example "Paediatrician"
+     * @param specialty the area of medicine, for example "Paediatrician"
      */
-    public Specialist(String id, String name, ArrayList<String> workingDays,
+    public Specialist(String identifier, String name, ArrayList<String> workingDays,
                       String specialty) {
-        super(id, name, workingDays);
+        super(identifier, name, workingDays);
         this.specialty = cleanText(specialty, DEFAULT_SPECIALTY);
     }
 
@@ -77,7 +77,7 @@ public class Specialist extends HealthProfessional implements Prescribable {
     /**
      * {@inheritDoc}
      *
-     * @param medication  the name of the medication
+     * @param medication the name of the medication
      * @param patientName the name of the patient receiving it
      * @return a message describing the prescription
      */

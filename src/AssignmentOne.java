@@ -13,7 +13,7 @@ import java.util.ArrayList;
  * their common parent type, and displaying their details.</p>
  *
  * @author Ziliang Lu (25259146)
- * @version 1.0
+ * @version 1.1
  */
 public class AssignmentOne {
 
@@ -48,20 +48,20 @@ public class AssignmentOne {
         professionals.add(new GeneralPractitioner("1001", "Alice Brown", "Room 4"));
         professionals.add(new GeneralPractitioner("1002", "Michael Chen", "Room 5"));
         professionals.add(new GeneralPractitioner("1003", "Priya Nair",
-                days("Tuesday", "Thursday", "Friday"), "Room 6"));
+                buildWorkingDays("Tuesday", "Thursday", "Friday"), "Room 6"));
 
         // One to two of each of the other types.
         professionals.add(new Specialist("2001", "Daniel Roberts", "Paediatrician"));
         professionals.add(new Specialist("2002", "Sofia Alvarez",
-                days("Monday", "Thursday", "Saturday"), "Cardiologist"));
+                buildWorkingDays("Monday", "Thursday", "Saturday"), "Cardiologist"));
 
         professionals.add(new Surgeon("3001", "James O'Connor", "Theatre 2"));
         professionals.add(new Surgeon("3002", "Wei Zhang",
-                days("Tuesday", "Wednesday", "Friday"), "Theatre 1"));
+                buildWorkingDays("Tuesday", "Wednesday", "Friday"), "Theatre 1"));
 
         professionals.add(new Nurse("4001", "Emma Wilson", "Ward 3"));
         professionals.add(new Nurse("4002", "Omar Haddad",
-                days("Monday", "Tuesday", "Saturday"), "Ward 5"));
+                buildWorkingDays("Monday", "Tuesday", "Saturday"), "Ward 5"));
 
         return professionals;
     }
@@ -72,12 +72,13 @@ public class AssignmentOne {
      * <p>A short helper keeps the constructor calls above readable instead of
      * building the same list inline for every professional.</p>
      *
-     * @param first  the first weekday
+     * @param first the first weekday
      * @param second the second weekday
-     * @param third  the third weekday
+     * @param third the third weekday
      * @return a list holding the three weekday names
      */
-    private static ArrayList<String> days(String first, String second, String third) {
+    private static ArrayList<String> buildWorkingDays(String first, String second,
+                                                      String third) {
         ArrayList<String> workingDays = new ArrayList<String>();
         workingDays.add(first);
         workingDays.add(second);
@@ -101,8 +102,8 @@ public class AssignmentOne {
         System.out.println("----------------------------------");
         System.out.println();
 
-        for (int i = 0; i < professionals.size(); i++) {
-            HealthProfessional professional = professionals.get(i);
+        for (int index = 0; index < professionals.size(); index++) {
+            HealthProfessional professional = professionals.get(index);
             System.out.println(professional);
             System.out.println();
         }

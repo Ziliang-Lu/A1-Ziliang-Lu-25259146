@@ -9,7 +9,7 @@ import java.util.ArrayList;
  * deliberately does not implement {@link Prescribable}.</p>
  *
  * @author Ziliang Lu (25259146)
- * @version 1.0
+ * @version 1.1
  */
 public class Nurse extends HealthProfessional {
 
@@ -21,25 +21,25 @@ public class Nurse extends HealthProfessional {
     /**
      * Creates a nurse who works the default weekdays.
      *
-     * @param id   the professional's identifier, digits only
+     * @param identifier the professional's identifier, digits only
      * @param name the professional's name
      * @param ward the ward, for example "Ward 3"
      */
-    public Nurse(String id, String name, String ward) {
-        super(id, name);
+    public Nurse(String identifier, String name, String ward) {
+        super(identifier, name);
         this.ward = cleanText(ward, DEFAULT_WARD);
     }
 
     /**
      * Creates a nurse who works the given weekdays.
      *
-     * @param id          the professional's identifier, digits only
-     * @param name        the professional's name
+     * @param identifier the professional's identifier, digits only
+     * @param name the professional's name
      * @param workingDays the weekdays this professional works
-     * @param ward        the ward, for example "Ward 3"
+     * @param ward the ward, for example "Ward 3"
      */
-    public Nurse(String id, String name, ArrayList<String> workingDays, String ward) {
-        super(id, name, workingDays);
+    public Nurse(String identifier, String name, ArrayList<String> workingDays, String ward) {
+        super(identifier, name, workingDays);
         this.ward = cleanText(ward, DEFAULT_WARD);
     }
 

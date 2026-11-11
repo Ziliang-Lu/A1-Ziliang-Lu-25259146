@@ -13,7 +13,7 @@
  * knowing which concrete type it is dealing with.</p>
  *
  * @author Ziliang Lu (25259146)
- * @version 1.0
+ * @version 1.1
  */
 public interface Prescribable {
 

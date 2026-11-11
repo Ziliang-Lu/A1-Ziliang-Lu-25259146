@@ -8,7 +8,7 @@ import java.util.ArrayList;
  * professional.</p>
  *
  * @author Ziliang Lu (25259146)
- * @version 1.0
+ * @version 1.1
  */
 public class GeneralPractitioner extends HealthProfessional implements Prescribable {
 
@@ -20,26 +20,26 @@ public class GeneralPractitioner extends HealthProfessional implements Prescriba
     /**
      * Creates a general practitioner who works the default weekdays.
      *
-     * @param id        the professional's identifier, digits only
-     * @param name      the professional's name
+     * @param identifier the professional's identifier, digits only
+     * @param name the professional's name
      * @param clinicRoom the consulting room, for example "Room 4"
      */
-    public GeneralPractitioner(String id, String name, String clinicRoom) {
-        super(id, name);
+    public GeneralPractitioner(String identifier, String name, String clinicRoom) {
+        super(identifier, name);
         this.clinicRoom = cleanText(clinicRoom, DEFAULT_ROOM);
     }
 
     /**
      * Creates a general practitioner who works the given weekdays.
      *
-     * @param id          the professional's identifier, digits only
-     * @param name        the professional's name
+     * @param identifier the professional's identifier, digits only
+     * @param name the professional's name
      * @param workingDays the weekdays this professional works
-     * @param clinicRoom  the consulting room, for example "Room 4"
+     * @param clinicRoom the consulting room, for example "Room 4"
      */
-    public GeneralPractitioner(String id, String name, ArrayList<String> workingDays,
+    public GeneralPractitioner(String identifier, String name, ArrayList<String> workingDays,
                                String clinicRoom) {
-        super(id, name, workingDays);
+        super(identifier, name, workingDays);
         this.clinicRoom = cleanText(clinicRoom, DEFAULT_ROOM);
     }
 
@@ -76,7 +76,7 @@ public class GeneralPractitioner extends HealthProfessional implements Prescriba
     /**
      * {@inheritDoc}
      *
-     * @param medication  the name of the medication
+     * @param medication the name of the medication
      * @param patientName the name of the patient receiving it
      * @return a message describing the prescription
      */

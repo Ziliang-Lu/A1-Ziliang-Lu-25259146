@@ -20,7 +20,7 @@ import java.util.ArrayList;
  * responsible for checking what it is given.</p>
  *
  * @author Ziliang Lu (25259146)
- * @version 1.0
+ * @version 1.1
  */
 public abstract class HealthProfessional {
 
@@ -30,12 +30,12 @@ public abstract class HealthProfessional {
     };
 
     /** The identifier used when a caller supplies nothing usable. */
-    private static final String DEFAULT_ID = "0";
+    private static final String DEFAULT_IDENTIFIER = "0";
 
     /** The name used when a caller supplies nothing usable. */
     private static final String DEFAULT_NAME = "Unnamed professional";
 
-    private String id;
+    private String identifier;
     private String name;
     private ArrayList<String> workingDays;
 
@@ -43,36 +43,37 @@ public abstract class HealthProfessional {
      * Creates a health professional who works the default weekdays
      * (Monday, Wednesday and Friday).
      *
-     * @param id   the professional's identifier, digits only
+     * @param identifier the professional's identifier, digits only
      * @param name the professional's name
      */
-    public HealthProfessional(String id, String name) {
+    public HealthProfessional(String identifier, String name) {
         // Constructor chaining: the real work is done once, in the full
         // constructor below, instead of being copied into both constructors.
-        this(id, name, defaultWorkingDays());
+        this(identifier, name, createDefaultWorkingDays());
     }
 
     /**
      * Creates a health professional who works the given weekdays.
      *
-     * @param id           the professional's identifier, digits only
-     * @param name         the professional's name
-     * @param workingDays  the weekdays this professional works
+     * @param identifier the professional's identifier, digits only
+     * @param name the professional's name
+     * @param workingDays the weekdays this professional works
      */
-    public HealthProfessional(String id, String name, ArrayList<String> workingDays) {
-        this.id = cleanId(id);
+    public HealthProfessional(String identifier, String name,
+                              ArrayList<String> workingDays) {
+        this.identifier = cleanIdentifier(identifier);
         this.name = cleanText(name, DEFAULT_NAME);
         this.workingDays = cleanWorkingDays(workingDays);
     }
 
     /**
-     * Returns the weekdays a professional works when the caller does not
+     * Creates the weekdays a professional works when the caller does not
      * supply any.
      *
      * @return a new list holding Monday, Wednesday and Friday
      */
-    private static ArrayList<String> defaultWorkingDays() {
-        ArrayList<String> days = new ArrayList<>();
+    private static ArrayList<String> createDefaultWorkingDays() {
+        ArrayList<String> days = new ArrayList<String>();
         days.add("Monday");
         days.add("Wednesday");
         days.add("Friday");
@@ -81,23 +82,23 @@ public abstract class HealthProfessional {
 
     /**
      * Keeps the digits of the supplied identifier and nothing else, so that
-     * the "id is a number" rule can never be broken.
+     * the rule "the identifier is a number" can never be broken.
      *
-     * @param id the identifier supplied by the caller
+     * @param identifier the identifier supplied by the caller
      * @return an identifier containing digits only
      */
-    private static String cleanId(String id) {
+    private static String cleanIdentifier(String identifier) {
         String digitsOnly = "";
-        if (id != null) {
-            for (int i = 0; i < id.length(); i++) {
-                char character = id.charAt(i);
+        if (identifier != null) {
+            for (int index = 0; index < identifier.length(); index++) {
+                char character = identifier.charAt(index);
                 if (character >= '0' && character <= '9') {
                     digitsOnly = digitsOnly + character;
                 }
             }
         }
         if (digitsOnly.length() == 0) {
-            return DEFAULT_ID;
+            return DEFAULT_IDENTIFIER;
         }
         return digitsOnly;
     }
@@ -105,7 +106,7 @@ public abstract class HealthProfessional {
     /**
      * Trims a piece of text and falls back to a default when nothing is left.
      *
-     * @param text     the text supplied by the caller
+     * @param text the text supplied by the caller
      * @param fallback the value to use when the text is empty
      * @return the trimmed text, or the fallback
      */
@@ -128,7 +129,7 @@ public abstract class HealthProfessional {
      * @return a clean list of weekday names
      */
     private static ArrayList<String> cleanWorkingDays(ArrayList<String> days) {
-        ArrayList<String> cleaned = new ArrayList<>();
+        ArrayList<String> cleaned = new ArrayList<String>();
         if (days != null) {
             for (String day : days) {
                 String candidate = cleanText(day, "");
@@ -138,7 +139,7 @@ public abstract class HealthProfessional {
             }
         }
         if (cleaned.size() == 0) {
-            return defaultWorkingDays();
+            return createDefaultWorkingDays();
         }
         return cleaned;
     }
@@ -150,8 +151,8 @@ public abstract class HealthProfessional {
      * @return {@code true} when the text names a weekday
      */
     private static boolean isWeekdayName(String text) {
-        for (int i = 0; i < WEEKDAY_NAMES.length; i++) {
-            if (WEEKDAY_NAMES[i].equals(text)) {
+        for (int index = 0; index < WEEKDAY_NAMES.length; index++) {
+            if (WEEKDAY_NAMES[index].equals(text)) {
                 return true;
             }
         }
@@ -163,8 +164,8 @@ public abstract class HealthProfessional {
      *
      * @return the identifier, digits only
      */
-    public String getId() {
-        return id;
+    public String getIdentifier() {
+        return identifier;
     }
 
     /**
@@ -220,7 +221,7 @@ public abstract class HealthProfessional {
      */
     @Override
     public String toString() {
-        return "ID:           " + id + "\n"
+        return "Identifier:   " + identifier + "\n"
              + "Name:         " + name + "\n"
              + "Role:         " + getRole() + "\n"
              + "Working days: " + describeWorkingDays();
@@ -233,11 +234,11 @@ public abstract class HealthProfessional {
      */
     private String describeWorkingDays() {
         String description = "";
-        for (int i = 0; i < workingDays.size(); i++) {
-            if (i > 0) {
+        for (int index = 0; index < workingDays.size(); index++) {
+            if (index > 0) {
                 description = description + ", ";
             }
-            description = description + workingDays.get(i);
+            description = description + workingDays.get(index);
         }
         return description;
     }
