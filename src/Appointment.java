@@ -24,7 +24,7 @@
  * instead.</p>
  *
  * @author Ziliang Lu (25259146)
- * @version 1.0
+ * @version 1.1
  */
 public class Appointment implements Comparable<Appointment> {
 
@@ -131,6 +131,43 @@ public class Appointment implements Comparable<Appointment> {
     @Override
     public int compareTo(Appointment other) {
         return timeSlot.compareTo(other.timeSlot);
+    }
+
+    /**
+     * Tells whether another object is the same booking slot.
+     *
+     * <p>Two appointments are considered equal when they are for the same
+     * health professional at the same time, because that pair is exactly what
+     * the clinic forbids: one professional can only be in one place at one time.
+     * The patient is deliberately left out of the test, which is what lets the
+     * manager detect a double booking with a single {@code contains(...)}
+     * call.</p>
+     *
+     * @param other the object to compare with
+     * @return {@code true} when both appointments occupy the same professional's
+     *         slot at the same time
+     */
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (!(other instanceof Appointment)) {
+            return false;
+        }
+        Appointment that = (Appointment) other;
+        return healthProfessional.equals(that.healthProfessional)
+            && timeSlot.equals(that.timeSlot);
+    }
+
+    /**
+     * Returns a hash code consistent with {@link #equals(Object)}.
+     *
+     * @return a hash code built from the professional and the time slot
+     */
+    @Override
+    public int hashCode() {
+        return healthProfessional.hashCode() * 31 + timeSlot.hashCode();
     }
 
     /**

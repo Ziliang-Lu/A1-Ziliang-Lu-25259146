@@ -15,13 +15,14 @@ import java.util.Collections;
  * with details would be hard to read and impossible to reuse, so each step is
  * kept small and can be called again once Parts 4 to 6 add more to show.</p>
  *
- * <p><b>What this stage covers.</b> Parts 1 to 4 of the assessment: creating
+ * <p><b>What this stage covers.</b> Parts 1 to 5 of the assessment: creating
  * health professionals of several types, storing them together as their common
- * parent type, displaying their details and their introductions, and booking
- * appointments that order themselves by time.</p>
+ * parent type, displaying their details and their introductions, booking
+ * appointments that order themselves by time, and managing the day's bookings
+ * through the appointment manager.</p>
  *
  * @author Ziliang Lu (25259146)
- * @version 1.4
+ * @version 1.5
  */
 public class AssignmentOne {
 
@@ -43,6 +44,7 @@ public class AssignmentOne {
         displayHealthProfessionals(professionals);
         displayIntroductions(professionals);
         demonstrateAppointmentOrdering(professionals);
+        demonstrateAppointmentManagement(professionals);
     }
 
     /**
@@ -225,6 +227,94 @@ public class AssignmentOne {
         } else {
             System.out.println("Unexpected: the appointment was created.");
         }
+    }
+
+    /**
+     * Demonstrates the appointment manager end to end.
+     *
+     * <p>The sequence follows the way a receptionist works through a day: book
+     * a few appointments, see a double booking being refused, look at the day in
+     * time order, look at one professional's list and one patient's list,
+     * cancel a booking by time and then by patient, and finally try to cancel
+     * something that no longer exists.</p>
+     *
+     * <p>Every method call returns its own message and none of them throws, so a
+     * refused booking is an ordinary line of output rather than a crash. That is
+     * what the assessment asks for when it says a warning is returned when an
+     * action cannot be performed.</p>
+     *
+     * @param professionals the health professionals the appointments are booked
+     *        with
+     */
+    private static void demonstrateAppointmentManagement(
+            ArrayList<HealthProfessional> professionals) {
+        AppointmentManager manager = new AppointmentManager();
+        ArrayList<TimeSlot> schedule = TimeSlot.createDailySchedule();
+
+        Patient michael = new Patient("Michael Chen", "0412 345 678");
+        Patient sofia = new Patient("Sofia Rossi", "0498 765 432");
+        Patient oliver = new Patient("Oliver Grant", "0401 222 333");
+
+        // Short local names keep the calls below readable; each one still points
+        // at the same object that is stored in the list of professionals.
+        HealthProfessional alice = professionals.get(0);
+        HealthProfessional daniel = professionals.get(3);
+        HealthProfessional james = professionals.get(5);
+        HealthProfessional emma = professionals.get(7);
+
+        // Position 2 is 09:00, position 1 is 08:30 and position 4 is 10:00 on
+        // the standard timetable.
+        TimeSlot nineOClock = schedule.get(2);
+        TimeSlot eightThirty = schedule.get(1);
+        TimeSlot tenOClock = schedule.get(4);
+
+        System.out.println();
+        System.out.println("Booking appointments");
+        System.out.println("--------------------");
+        System.out.println(manager.addAppointment(michael, alice, nineOClock));
+        System.out.println(manager.addAppointment(sofia, daniel, nineOClock));
+        System.out.println(manager.addAppointment(oliver, james, eightThirty));
+        System.out.println(manager.addAppointment(michael, emma, tenOClock));
+
+        // Alice is free at 08:30 but already booked at 09:00, so this one must
+        // be refused even though the patient is different.
+        System.out.println(manager.addAppointment(michael, alice, nineOClock));
+
+        System.out.println();
+        System.out.println("All appointments, earliest first");
+        System.out.println("--------------------------------");
+        System.out.println(manager.getAppointmentCount() + " appointment(s) booked.");
+        System.out.println();
+        displayAppointments(manager.getAllAppointments());
+
+        System.out.println("Appointments for professional 1001");
+        System.out.println("----------------------------------");
+        displayAppointments(manager.filterByHealthProfessional("1001"));
+
+        System.out.println("Appointments for patient 0412345678");
+        System.out.println("-----------------------------------");
+        displayAppointments(manager.filterByPatientPhoneNumber("0412345678"));
+
+        System.out.println("Cancelling the 09:00 appointment with professional 1001");
+        System.out.println("------------------------------------------------------");
+        System.out.println(manager.cancelByHealthProfessionalAndTime("1001", nineOClock));
+
+        System.out.println();
+        System.out.println("Cancelling every appointment for patient 0412345678");
+        System.out.println("---------------------------------------------------");
+        System.out.println(manager.cancelByPatientPhoneNumber("0412345678"));
+
+        System.out.println();
+        System.out.println("Trying to cancel the same appointment again");
+        System.out.println("-------------------------------------------");
+        System.out.println(manager.cancelByHealthProfessionalAndTime("1001", nineOClock));
+
+        System.out.println();
+        System.out.println("Appointments left at the end of the day");
+        System.out.println("---------------------------------------");
+        System.out.println(manager.getAppointmentCount() + " appointment(s) booked.");
+        System.out.println();
+        displayAppointments(manager.getAllAppointments());
     }
 
     /**

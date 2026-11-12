@@ -31,7 +31,7 @@ import java.util.ArrayList;
  * from Module 3.</p>
  *
  * @author Ziliang Lu (25259146)
- * @version 1.3
+ * @version 1.4
  */
 public abstract class HealthProfessional {
 
@@ -253,6 +253,49 @@ public abstract class HealthProfessional {
      */
     public String getIdentifier() {
         return identifier;
+    }
+
+    /**
+     * Tells whether another object describes the same health professional.
+     *
+     * <p>Two professionals are the same person when their identifiers match,
+     * even if the objects are different instances, because the identifier is
+     * what the clinic issues and what the rota uses. The name is deliberately
+     * not part of the test: two people can share a name, and a professional may
+     * change their name without becoming a different person.</p>
+     *
+     * <p>This is the method the appointment system needs in order to answer "is
+     * this professional already booked at that time", and it is what lets
+     * {@code Appointment.equals(Object)} compare two appointments by the
+     * professional pair rather than by object identity.</p>
+     *
+     * @param other the object to compare with
+     * @return {@code true} when both objects describe the same identifier
+     */
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (!(other instanceof HealthProfessional)) {
+            return false;
+        }
+        HealthProfessional that = (HealthProfessional) other;
+        return identifier.equals(that.identifier);
+    }
+
+    /**
+     * Returns a hash code consistent with {@link #equals(Object)}.
+     *
+     * <p>Equal objects must return the same hash code, so this is built from the
+     * same field the equality test uses. Overriding one of the two without the
+     * other would break any collection that relies on hashing.</p>
+     *
+     * @return a hash code based on the identifier
+     */
+    @Override
+    public int hashCode() {
+        return identifier.hashCode();
     }
 
     /**
