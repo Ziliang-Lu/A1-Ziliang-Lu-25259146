@@ -15,7 +15,7 @@ import java.util.ArrayList;
  * to express that.</p>
  *
  * @author Ziliang Lu (25259146)
- * @version 1.2
+ * @version 1.3
  */
 public class GeneralPractitioner extends HealthProfessional implements Prescribable {
 
@@ -100,6 +100,21 @@ public class GeneralPractitioner extends HealthProfessional implements Prescriba
     public String toString() {
         return super.toString() + "\n"
              + "Clinic room:  " + clinicRoom;
+    }
+
+    /**
+     * Returns a one-paragraph introduction for a patient to read.
+     *
+     * <p>The consulting room belongs in the sentence because "where do I go"
+     * is the first question a patient asks, and the working days close it so
+     * the sentence also says when the doctor can be seen.</p>
+     *
+     * @return a sentence describing this general practitioner
+     */
+    @Override
+    public String getIntroduction() {
+        return "Dr " + getName() + " is a general practitioner consulting from "
+             + clinicRoom + ", and is available on " + describeWorkingDays() + ".";
     }
 
     /**

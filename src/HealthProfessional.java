@@ -31,7 +31,7 @@ import java.util.ArrayList;
  * from Module 3.</p>
  *
  * @author Ziliang Lu (25259146)
- * @version 1.2
+ * @version 1.3
  */
 public abstract class HealthProfessional {
 
@@ -293,6 +293,27 @@ public abstract class HealthProfessional {
     }
 
     /**
+     * Returns a one-paragraph introduction that a patient could read.
+     *
+     * <p>The details printed by {@code toString()} are a record: one field per
+     * line, which is what a list of professionals or an appointment needs. An
+     * introduction is prose, which is what a person needs when the clinic
+     * advertises who works there. The two are kept separate on purpose instead
+     * of one being squeezed out of the other.</p>
+     *
+     * <p>Every subclass overrides this to describe itself in its own words, so
+     * the same method call produces four different sentences. That is
+     * polymorphism doing more than printing fields: the shared signature hides
+     * four different behaviours.</p>
+     *
+     * @return a sentence describing this professional
+     */
+    public String getIntroduction() {
+        return getName() + " is a " + getRole() + " at the clinic, and is "
+             + "available on " + describeWorkingDays() + ".";
+    }
+
+    /**
      * Returns the kind of health professional this object represents.
      *
      * <p>Every concrete subclass must answer this. That is what lets the
@@ -331,9 +352,14 @@ public abstract class HealthProfessional {
      * <p>The commas are added between the days rather than after each one, so
      * the line never ends with a stray comma.</p>
      *
+     * <p>It is {@code protected} rather than private because the subclasses use
+     * the same phrasing inside their own introductions, and repeating the comma
+     * handling in four classes would be the kind of duplication that
+     * inheritance exists to remove.</p>
+     *
      * @return the working days separated by commas
      */
-    private String describeWorkingDays() {
+    protected String describeWorkingDays() {
         String description = "";
         for (int index = 0; index < workingDays.size(); index++) {
             if (index > 0) {

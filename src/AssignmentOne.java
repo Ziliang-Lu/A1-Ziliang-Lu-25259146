@@ -19,7 +19,7 @@ import java.util.ArrayList;
  * parent type, and displaying their details.</p>
  *
  * @author Ziliang Lu (25259146)
- * @version 1.2
+ * @version 1.3
  */
 public class AssignmentOne {
 
@@ -39,6 +39,7 @@ public class AssignmentOne {
 
         ArrayList<HealthProfessional> professionals = createHealthProfessionals();
         displayHealthProfessionals(professionals);
+        displayIntroductions(professionals);
     }
 
     /**
@@ -139,5 +140,27 @@ public class AssignmentOne {
         }
 
         System.out.println("Total health professionals: " + professionals.size());
+    }
+
+    /**
+     * Displays a written introduction for every health professional.
+     *
+     * <p>The same method is called on every object, yet each subtype answers
+     * with its own sentence, because {@code getIntroduction()} is overridden in
+     * every concrete class. Nothing in this loop mentions a subtype, and no
+     * subtype has to be handled separately.</p>
+     *
+     * @param professionals the health professionals to introduce
+     */
+    private static void displayIntroductions(ArrayList<HealthProfessional> professionals) {
+        System.out.println();
+        System.out.println("Who works at the clinic");
+        System.out.println("-----------------------");
+        System.out.println();
+
+        for (int index = 0; index < professionals.size(); index++) {
+            System.out.println(professionals.get(index).getIntroduction());
+            System.out.println();
+        }
     }
 }

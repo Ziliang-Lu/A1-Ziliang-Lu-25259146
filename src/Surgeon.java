@@ -15,7 +15,7 @@ import java.util.ArrayList;
  * anything.</p>
  *
  * @author Ziliang Lu (25259146)
- * @version 1.2
+ * @version 1.3
  */
 public class Surgeon extends HealthProfessional implements Prescribable {
 
@@ -91,6 +91,17 @@ public class Surgeon extends HealthProfessional implements Prescribable {
     public String toString() {
         return super.toString() + "\n"
              + "Theatre:      " + theatre;
+    }
+
+    /**
+     * Returns a one-paragraph introduction for a patient to read.
+     *
+     * @return a sentence describing this surgeon and their theatre
+     */
+    @Override
+    public String getIntroduction() {
+        return "Dr " + getName() + " is a surgeon operating in " + theatre
+             + ", and is available on " + describeWorkingDays() + ".";
     }
 
     /**

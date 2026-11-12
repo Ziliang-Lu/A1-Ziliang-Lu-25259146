@@ -16,7 +16,7 @@ import java.util.ArrayList;
  * the area is recorded as data instead.</p>
  *
  * @author Ziliang Lu (25259146)
- * @version 1.2
+ * @version 1.3
  */
 public class Specialist extends HealthProfessional implements Prescribable {
 
@@ -102,6 +102,21 @@ public class Specialist extends HealthProfessional implements Prescribable {
     public String toString() {
         return super.toString() + "\n"
              + "Specialty:    " + specialty;
+    }
+
+    /**
+     * Returns a one-paragraph introduction for a patient to read.
+     *
+     * <p>"works as a Paediatrician" reads better than "is a Specialist of
+     * Paediatrician", which is why the specialty is placed in the sentence
+     * instead of being appended after the role.</p>
+     *
+     * @return a sentence describing this specialist and their area
+     */
+    @Override
+    public String getIntroduction() {
+        return "Dr " + getName() + " works as a " + specialty
+             + ", and is available on " + describeWorkingDays() + ".";
     }
 
     /**

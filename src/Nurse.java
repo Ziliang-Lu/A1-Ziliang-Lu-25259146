@@ -14,7 +14,7 @@ import java.util.ArrayList;
  * check it with {@code instanceof}.</p>
  *
  * @author Ziliang Lu (25259146)
- * @version 1.2
+ * @version 1.3
  */
 public class Nurse extends HealthProfessional {
 
@@ -89,6 +89,20 @@ public class Nurse extends HealthProfessional {
     public String toString() {
         return super.toString() + "\n"
              + "Ward:         " + ward;
+    }
+
+    /**
+     * Returns a one-paragraph introduction for a patient to read.
+     *
+     * <p>A nurse is introduced by the ward rather than by a room, which is the
+     * one piece of information that tells a patient where to find them.</p>
+     *
+     * @return a sentence describing this nurse and their ward
+     */
+    @Override
+    public String getIntroduction() {
+        return "Nurse " + getName() + " is based on " + ward
+             + ", and is available on " + describeWorkingDays() + ".";
     }
 
     /**
