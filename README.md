@@ -19,7 +19,10 @@ A1-Ziliang-Lu-25259146/
 │   ├── GeneralPractitioner.java   a doctor, adds a consulting room
 │   ├── Specialist.java            a doctor, adds an area of medicine
 │   ├── Surgeon.java               a doctor, adds an operating theatre
-│   └── Nurse.java                 adds a ward, takes blood samples
+│   ├── Nurse.java                 adds a ward, takes blood samples
+│   ├── Patient.java               a patient: name and mobile number
+│   ├── TimeSlot.java              one position in the clinic timetable
+│   └── Appointment.java           patient + professional + time slot
 └── README.md
 ```
 
@@ -28,7 +31,7 @@ A1-Ziliang-Lu-25259146/
 | Health professional model | done — `HealthProfessional` |
 | Health professional types | done — four types plus the `Prescribable` capability |
 | Health professional objects | done — created and displayed together in `main()` |
-| Appointment model | not started |
+| Appointment model | done — `Patient`, `TimeSlot` and `Appointment` with `Comparable` |
 | Appointment management | not started |
 
 ## Domain constraints

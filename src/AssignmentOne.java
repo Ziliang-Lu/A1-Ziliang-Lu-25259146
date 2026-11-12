@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Entry point for the health appointment system.
@@ -14,12 +15,13 @@ import java.util.ArrayList;
  * with details would be hard to read and impossible to reuse, so each step is
  * kept small and can be called again once Parts 4 to 6 add more to show.</p>
  *
- * <p><b>What this stage covers.</b> Parts 1 to 3 of the assessment: creating
+ * <p><b>What this stage covers.</b> Parts 1 to 4 of the assessment: creating
  * health professionals of several types, storing them together as their common
- * parent type, and displaying their details.</p>
+ * parent type, displaying their details and their introductions, and booking
+ * appointments that order themselves by time.</p>
  *
  * @author Ziliang Lu (25259146)
- * @version 1.3
+ * @version 1.4
  */
 public class AssignmentOne {
 
@@ -40,6 +42,7 @@ public class AssignmentOne {
         ArrayList<HealthProfessional> professionals = createHealthProfessionals();
         displayHealthProfessionals(professionals);
         displayIntroductions(professionals);
+        demonstrateAppointmentOrdering(professionals);
     }
 
     /**
@@ -160,6 +163,78 @@ public class AssignmentOne {
 
         for (int index = 0; index < professionals.size(); index++) {
             System.out.println(professionals.get(index).getIntroduction());
+            System.out.println();
+        }
+    }
+
+    /**
+     * Demonstrates that appointments order themselves by time.
+     *
+     * <p>The appointments are created deliberately out of order, printed in the
+     * order they were created, sorted with {@code Collections.sort(...)}, and
+     * printed again. Because {@code Appointment} implements
+     * {@code Comparable<Appointment>}, the sort needs to be told nothing about
+     * how to compare two appointments.</p>
+     *
+     * <p>The last part of the method shows the refusal: booking without a health
+     * professional returns {@code null}, so an incomplete appointment cannot be
+     * created in the first place.</p>
+     *
+     * @param professionals the health professionals the appointments are booked
+     *        with
+     */
+    private static void demonstrateAppointmentOrdering(
+            ArrayList<HealthProfessional> professionals) {
+        ArrayList<TimeSlot> dailySchedule = TimeSlot.createDailySchedule();
+        ArrayList<Appointment> appointments = new ArrayList<Appointment>();
+
+        Patient michael = new Patient("Michael Chen", "0412 345 678");
+        Patient sofia = new Patient("Sofia Rossi", "0498 765 432");
+        Patient oliver = new Patient("Oliver Grant", "0401 222 333");
+
+        // The slots are picked so the list is not already in time order.
+        // Position 6 is 11:00, position 3 is 09:30, position 1 is 08:30 and
+        // position 4 is 10:00 on the standard timetable.
+        appointments.add(Appointment.book(michael, professionals.get(0), dailySchedule.get(6)));
+        appointments.add(Appointment.book(sofia, professionals.get(3), dailySchedule.get(3)));
+        appointments.add(Appointment.book(oliver, professionals.get(5), dailySchedule.get(1)));
+        appointments.add(Appointment.book(michael, professionals.get(7), dailySchedule.get(4)));
+
+        System.out.println("Appointments in the order they were booked");
+        System.out.println("------------------------------------------");
+        System.out.println();
+        displayAppointments(appointments);
+
+        System.out.println();
+        System.out.println("The same appointments sorted by time");
+        System.out.println("------------------------------------");
+        System.out.println();
+
+        // Collections.sort only needs the interface: the list says what to sort
+        // and Appointment says how two appointments compare with each other.
+        Collections.sort(appointments);
+        displayAppointments(appointments);
+
+        System.out.println();
+        System.out.println("Attempt to book an appointment without a professional");
+        System.out.println("-----------------------------------------------------");
+
+        Appointment incomplete = Appointment.book(michael, null, dailySchedule.get(2));
+        if (incomplete == null) {
+            System.out.println("Cannot book: the health professional is missing.");
+        } else {
+            System.out.println("Unexpected: the appointment was created.");
+        }
+    }
+
+    /**
+     * Displays every appointment in the list.
+     *
+     * @param appointments the appointments to display
+     */
+    private static void displayAppointments(ArrayList<Appointment> appointments) {
+        for (int index = 0; index < appointments.size(); index++) {
+            System.out.println(appointments.get(index));
             System.out.println();
         }
     }
