@@ -3,10 +3,12 @@
 Health appointment system, implemented in Java with object-oriented design
 concepts from Modules 1–3 of PROG2004 Object Oriented Programming.
 
-There is no user interface, no menu, no login and no data persistence: the
-project is a set of collaborating classes that model the domain, plus a
-scripted demonstration in `main()` that exercises their behaviour and prints
-the results to the console.
+There is no user interface, no menu, no login and no data persistence in the
+scripted demonstration: the project is a set of collaborating classes that model
+the domain, plus a scripted demonstration in `main()` that exercises their
+behaviour and prints the results to the console. An optional console front end
+adds a menu on top of the same classes, and is started with the argument
+`console`.
 
 ## Structure
 
@@ -40,8 +42,8 @@ A1-Ziliang-Lu-25259146/
 
 ## Domain constraints
 
-- A health professional is identified by a numeric ID and a name, and works a
-  fixed set of weekdays.
+- A health professional is identified by a numeric identifier and a name, and
+  works a fixed set of weekdays.
 - Bookings are for the current day only.
 - The clinic schedule is fixed: 08:00–16:00 in 30-minute slots.
 - A health professional can never be double-booked into the same time slot.
@@ -52,8 +54,8 @@ The design follows the patterns from the Modules 1–3 tutorials:
 
 - **Abstraction** — `HealthProfessional` is abstract, so a professional with no
   specialty cannot be created, and every subclass is forced to answer
-  `getRole()`. `Prescribable` abstracts the prescribing capability on its own,
-  which inheritance alone cannot express.
+  `getRole()` and `getDepartment()`. `Prescribable` abstracts the prescribing
+  capability on its own, which inheritance alone cannot express.
 - **Encapsulation** — all fields are private and only getters are exposed. The
   constructor is the single place where data is set, and it is responsible for
   keeping the object valid, so external code can read a professional's details
@@ -122,118 +124,125 @@ java -cp out AssignmentOne
 Development history is tracked with regular commits in this repository, and
 time spent on the project is recorded with WakaTime.
 
-## 如何运行这个程序（分步说明）
+## How to run the program, step by step
 
-整个流程共五步。所有命令都在"项目文件夹对应的终端"里执行，顺序不能颠倒。
+The whole procedure is five steps. Every command runs in the terminal of the
+project folder, and the order matters: the program always runs the compiled
+`.class` files, never the source files.
 
 ```bash
 # ---------------------------------------------------------------------------
-# 第 1 步：在 Visual Studio Code 里打开项目文件夹
-#   文件 > 打开文件夹 > 选择 A1-Ziliang-Lu-25259146
-#   左侧资源管理器最顶上一行必须显示这个文件夹名，src/ 里应当有 12 个 .java 文件。
-#   如果打开的是上一层目录（例如 "Object Oriented Programming"），编译照样能过，
-#   但"找不到文件"这类错误，绝大多数都是文件夹打开错了。
+# Step 1 - open the project folder in Visual Studio Code
+#   File > Open Folder > A1-Ziliang-Lu-25259146
+#   The top line of the Explorer must show this folder name, and src/ must
+#   contain 12 .java files.
+#   Opening a folder higher up (for example "Object Oriented Programming") still
+#   compiles, but "file not found" errors almost always mean the wrong folder.
 # ---------------------------------------------------------------------------
 
 # ---------------------------------------------------------------------------
-# 第 2 步：打开内置终端
-#   Ctrl + `（反引号，Esc 键下面那个键）
-#   提示符末尾必须是项目文件夹名，例如：
+# Step 2 - open the built-in terminal
+#   Ctrl + ` (the backtick key, below Esc)
+#   The prompt must end with the project folder name, for example
 #   PS C:\...\A1-Ziliang-Lu-25259146>
-#   如果不是，先切换到项目目录：
-cd "C:\Users\23961\Desktop\外方作业\Object Oriented Programming\A1-Ziliang-Lu-25259146"
+#   If it does not, change directory to the project folder first:
+cd "<the full path of the project folder>"
 # ---------------------------------------------------------------------------
 
 # ---------------------------------------------------------------------------
-# 第 3 步：确认 JDK 可用
+# Step 3 - check that a JDK is available
 javac -version
-# 期望输出：javac 26.0.2.1
-# 如果提示"无法将 javac 识别为..."，说明终端里没有 JDK：关掉终端重开，
-# 或用 VS Code 的"重新加载窗口"，仍不行则要先修好 PATH 再往下走。
+# Expected output: javac 26.0.2.1
+# If the terminal says javac is not recognised, the JDK is not on the PATH:
+# close and reopen the terminal, or repair the PATH before going on.
 # ---------------------------------------------------------------------------
 
 # ---------------------------------------------------------------------------
-# 第 4 步：把全部源文件编译到 out 文件夹
+# Step 4 - compile every source file into the out folder
 javac -d out src/*.java
-# 期望输出：什么都不显示。没有消息就是成功。
-# 编译完成后会多出 out/ 文件夹，里面有 12 个 .class 文件。它是编译产物：
-# 已被 .gitignore 排除，不会进仓库，也不会进提交的 zip 包。
-# 想删随时删，下次编译会自动重新生成。
+# Expected output: nothing at all. Silence means the compilation succeeded.
+# A folder named out/ now holds 12 .class files. It is build output: it is
+# listed in .gitignore, so it is never committed and never included in the
+# submitted zip. Delete it at any time; the next compile recreates it.
 # ---------------------------------------------------------------------------
 
 # ---------------------------------------------------------------------------
-# 第 5 步：运行演示程序
+# Step 5 - run the scripted demonstration
 java -cp out AssignmentOne
-# 期望输出：共 227 行，开头是
+# Expected output: 227 lines, starting with
 #   PROG2004 Assessment 1 - Health appointment system
-# 结尾是
+# and ending with
 #   End of demonstration.
-# 输出按作业的六个部分分节展示，顺序如下：
-#   健康从业者详情            Part 3
-#   从业者简介                多态（同一方法四种说法）
-#   每人能做什么              Part 2（开药 / 手术 / 抽血）
-#   预约挂号                  Part 5
-#   全部预约（按时间排序）     Part 4 + Part 5
-#   按医生编号筛选            1001
-#   按患者手机号筛选          0412345678
-#   取消预约（三种方式）      按医生+时间、按手机号、再取消一次
-#   操作失败的警告            重复预约、非法时段、缺少医生
-#   演示结束
+# The output follows the parts of the assessment, in this order:
+#   health professionals at the clinic      Part 3
+#   who works at the clinic                 introductions
+#   what each professional can do           Part 2
+#   booking appointments                    Part 5
+#   all appointments, earliest first        Part 4 and Part 5
+#   appointments for professional 1001      filtering by professional
+#   appointments for patient 0412345678     filtering by patient
+#   cancelling ...                          cancelling, three ways
+#   refusing ...                            the error cases
+#   end of demonstration
 # ---------------------------------------------------------------------------
 
 # ---------------------------------------------------------------------------
-# 可选：把输出保存成文件，方便慢慢看
+# Optional - keep the output for later reading
 java -cp out AssignmentOne > output.txt
-# output.txt 不会被提交；用完可以删掉。
+# output.txt is not committed; delete it when it is no longer needed.
 # ---------------------------------------------------------------------------
 
 # ---------------------------------------------------------------------------
-# 可选：进入交互式挂号控制台
+# Optional - start the interactive console
 java -cp out AssignmentOne console
-# 脚本演示跑完之后进入交互界面，流程如下：
+# After the demonstration the interactive front end starts:
 #
-#   第 1 步 登录
-#     屏幕上列出五位患者的名字（只显示姓名，不显示手机号），选一个编号，
-#     再输入手机号当密码。手机号不对会提示：
+#   Step 1  log in
+#     The five patients are listed by name only; the phone number is never
+#     shown. Choose a number, then type the phone number that works like a
+#     password. A wrong number gives:
 #         Name or phone number do not match.
-#     名单里没有自己时选 0，可以现场注册：输入姓名和手机号即可，
-#     注册成功后自动登录。手机号已存在时会提示：
+#     Choose 0 to register instead: enter a name and a phone number and the
+#     patient is logged in straight away. A number that is already registered
+#     gives:
 #         That phone number is already registered.
 #
-#   第 2 步 登录后的菜单
-#     1  挂号
-#     2  我的预约
-#     3  查看全部预约
-#     9  退出登录
-#     0  退出程序
+#   Step 2  the menu after logging in
+#     1  book an appointment
+#     2  my appointments
+#     3  list all appointments
+#     9  log out
+#     0  quit
 #
-#   第 3 步 挂号（先选医生，再选时间段）
-#     选择医生时，每位医生都会显示：姓名、性别、类型、科室、今日预约数。
-#     确认选择后显示这位医生的完整档案（含简介）。
-#     然后列出这位医生的全部时间段，已被预约的时段标为 already booked，
-#     选中它会被拒绝：
+#   Step 3  booking (the doctor is chosen first, then the time)
+#     Each doctor is shown with the name, the gender, the role, the department
+#     and today's booking count. After choosing one, the full profile is shown,
+#     including the introduction. Then the doctor's time slots are listed: a
+#     slot that is already booked is marked "already booked", and choosing it
+#     is refused:
 #         That time is already booked for Alice Brown.
 #
-#   第 4 步 我的预约（保留或取消）
-#     列出当前患者自己的预约，选中一条后显示详情，再选择：
+#   Step 4  my appointments (keep or cancel)
+#     The patient's own appointments are listed; choosing one shows its details
+#     and then offers:
 #         1  keep this appointment
 #         2  cancel this appointment
-#     取消成功后回到列表，可以看到这条预约已经消失。
+#     After a cancellation the list is shown again, with the booking removed.
 #
-# 不带 console 参数时（也就是第 5 步）只有脚本演示，没有任何菜单。
+# Without the console argument (Step 5) there is only the scripted
+# demonstration and no menu at all.
 # ---------------------------------------------------------------------------
 
 # ---------------------------------------------------------------------------
-# 注意：只要改了任意一个 .java 文件，都必须重新执行第 4 步再执行第 5 步。
-# 程序运行的永远是编译出来的 .class 文件，而不是源文件。
+# Note: after changing any .java file, repeat Step 4 before Step 5.
 # ---------------------------------------------------------------------------
 ```
 
-### 如果运行出错了
+### If something goes wrong
 
-| 报错信息 | 原因 | 解决办法 |
+| Message | Cause | Fix |
 |---|---|---|
-| `javac` 无法识别 | 终端的 PATH 里没有 JDK | 关掉终端重开，或修复 PATH |
-| `Could not find or load main class AssignmentOne` | 跳过了第 4 步，或 `out/` 被删了 | 重新执行第 4 步 |
-| `src/*.java: no such file or directory` | 终端不在项目文件夹里 | 执行第 2 步里的 `cd` 命令 |
-| 输出只显示了一半 | 终端缓冲区被截断，不是程序出错 | 用第 5 步的可选命令输出到 `output.txt` 再看 |
+| `javac` is not recognised | the JDK is not on the PATH | reopen the terminal |
+| `Could not find or load main class` | Step 4 was skipped | run Step 4 again |
+| `src/*.java: no such file` | the terminal is in the wrong folder | run the `cd` in Step 2 |
+| the output stops early | the buffer was trimmed | use `> output.txt` |
