@@ -1,55 +1,29 @@
 import java.util.ArrayList;
 
 /**
- * One bookable slot in the clinic's daily schedule.
+ * Part 4: one bookable slot in the clinic timetable.
  *
- * <p>The clinic runs to a fixed timetable: it opens at 08:00, closes at 16:00,
- * and every appointment lasts thirty minutes. A slot is therefore not an
- * arbitrary moment; it is one of the sixteen positions in that timetable. This
- * class represents one of those positions.</p>
+ * Fields: startMinuteOfDay.
+ * Methods: createDailySchedule(), findByHourAndMinute(), findByLabel(),
+ *          getStartMinuteOfDay(), getEndMinuteOfDay(), getLabel(),
+ *          compareTo(), equals(), hashCode(), toString().
  *
- * <p><b>Why the time is an object rather than a string.</b> Two appointments
- * have to be ordered by time, and text such as "9:30" and "10:00" does not
- * compare correctly as text. Storing the start as a whole number of minutes
- * makes {@link #compareTo(TimeSlot)} a single numeric comparison, and the
- * readable form is produced only when the slot is printed.</p>
- *
- * <p><b>Why the schedule is generated, not listed.</b> The three constants
- * below describe the whole timetable. Changing the opening time, the closing
- * time or the length of an appointment is a change to those constants, and
- * every part of the system that asks this class for slots follows automatically.
- * A hand-written list of slots would have to be edited in every place it was
- * copied to.</p>
- *
- * @author Ziliang Lu (25259146)
- * @version 1.0
+ * The three constants below describe the whole timetable, so changing the
+ * opening hour, the closing hour or the slot length changes every slot at once.
  */
 public class TimeSlot implements Comparable<TimeSlot> {
 
-    /** The hour the clinic opens, in the 24-hour clock. */
-    public static final int CLINIC_OPENING_HOUR = 8;
+    public static final int CLINIC_OPENING_HOUR = 8;      // 24-hour clock
+    public static final int CLINIC_CLOSING_HOUR = 16;     // 24-hour clock
+    public static final int SLOT_LENGTH_IN_MINUTES = 30;  // one appointment
 
-    /** The hour the clinic closes, in the 24-hour clock. */
-    public static final int CLINIC_CLOSING_HOUR = 16;
-
-    /** How long one appointment lasts, in minutes. */
-    public static final int SLOT_LENGTH_IN_MINUTES = 30;
-
-    /**
-     * How many minutes after midnight this slot starts.
-     *
-     * <p>The value is always one that the schedule generator produced, because
-     * the constructor is private: a caller cannot invent 11:17 and put it into
-     * the system.</p>
-     */
-    private int startMinuteOfDay;
+    private int startMinuteOfDay;   // minutes after midnight
 
     /**
      * Creates a slot.
      *
-     * <p>The constructor is private so that slots can only be obtained from
-     * {@link #createDailySchedule()} or one of the finder methods. That is what
-     * guarantees a slot is always on the timetable.</p>
+     * The constructor is private, so a slot can only come from the timetable
+     * and a time such as 11:17 can never enter the system.
      *
      * @param startMinuteOfDay the minute of the day this slot starts at
      */
@@ -60,10 +34,6 @@ public class TimeSlot implements Comparable<TimeSlot> {
     /**
      * Builds the timetable for one day.
      *
-     * <p>A new list is built on every call rather than a single shared list
-     * being returned, because a caller that edited a shared list would change
-     * the timetable for everything else in the program.</p>
-     *
      * @return every slot in the day, earliest first
      */
     public static ArrayList<TimeSlot> createDailySchedule() {
@@ -71,8 +41,7 @@ public class TimeSlot implements Comparable<TimeSlot> {
         int startMinute = CLINIC_OPENING_HOUR * 60;
         int closingMinute = CLINIC_CLOSING_HOUR * 60;
 
-        // The loop stops as soon as a slot would run past closing time, so the
-        // last slot of the day starts early enough to finish before 16:00.
+        // stops before a slot would run past closing time
         while (startMinute + SLOT_LENGTH_IN_MINUTES <= closingMinute) {
             schedule.add(new TimeSlot(startMinute));
             startMinute = startMinute + SLOT_LENGTH_IN_MINUTES;
@@ -84,10 +53,9 @@ public class TimeSlot implements Comparable<TimeSlot> {
     /**
      * Finds the slot that starts at the given time.
      *
-     * @param hour the hour, on the 24-hour clock, for example 9
+     * @param hour the hour, for example 9
      * @param minute the minute, for example 30
-     * @return the matching slot, or {@code null} when that time is not a slot
-     *         in the timetable
+     * @return the matching slot, or null when the time is not in the timetable
      */
     public static TimeSlot findByHourAndMinute(int hour, int minute) {
         int wantedMinute = hour * 60 + minute;
@@ -105,14 +73,8 @@ public class TimeSlot implements Comparable<TimeSlot> {
     /**
      * Finds the slot that starts at the given time, written as "HH:mm".
      *
-     * <p>The text is read by hand rather than with a parsing library, and a
-     * malformed value simply returns {@code null}: an invalid time is an
-     * ordinary input mistake that the caller reports as a warning, not a
-     * situation that stops the program.</p>
-     *
      * @param time the time to look for, for example "08:30"
-     * @return the matching slot, or {@code null} when the text is not a time on
-     *         the timetable
+     * @return the matching slot, or null when the text is not a clinic time
      */
     public static TimeSlot findByLabel(String time) {
         if (time == null) {
@@ -134,9 +96,8 @@ public class TimeSlot implements Comparable<TimeSlot> {
         int hour = Integer.parseInt(hourPart);
         int minute = Integer.parseInt(minutePart);
 
-        // Hours still have to be in range: "99:00" is made of digits but it is
-        // not a time of day, and converting it would produce a slot that the
-        // timetable can never hold.
+        // checks the range as well, because "99:00" is made of digits but is
+        // not a time of day
         if (hour < 0 || hour > 23 || minute < 0 || minute > 59) {
             return null;
         }
@@ -148,8 +109,7 @@ public class TimeSlot implements Comparable<TimeSlot> {
      * Tells whether the text contains digits and nothing else.
      *
      * @param text the text to check
-     * @return {@code true} when every character is a digit and at least one
-     *         character is present
+     * @return true when every character is a digit and the text is not empty
      */
     private static boolean isDigitsOnly(String text) {
         if (text.length() == 0) {
@@ -185,9 +145,6 @@ public class TimeSlot implements Comparable<TimeSlot> {
     /**
      * Returns the start of the slot as a readable time.
      *
-     * <p>Each part is padded to two digits so that a column of times lines up,
-     * which is why "08:30" is printed instead of "8:30".</p>
-     *
      * @return the start of the slot, for example "08:30"
      */
     public String getLabel() {
@@ -210,13 +167,9 @@ public class TimeSlot implements Comparable<TimeSlot> {
     /**
      * Orders two slots from earliest to latest.
      *
-     * <p>Because the start is stored as a number of minutes, the comparison is
-     * a numeric one, which is what makes sorting a whole day of appointments
-     * correct without any text parsing.</p>
-     *
      * @param other the slot to compare against
-     * @return a negative number when this slot is earlier, zero when the slots
-     *         are the same, and a positive number when this slot is later
+     * @return a negative number when this slot is earlier, zero when both are
+     *         the same, and a positive number when this slot is later
      */
     @Override
     public int compareTo(TimeSlot other) {
@@ -233,7 +186,7 @@ public class TimeSlot implements Comparable<TimeSlot> {
      * Tells whether two slots are the same position on the timetable.
      *
      * @param other the object to compare with
-     * @return {@code true} when both objects describe the same slot
+     * @return true when both objects describe the same slot
      */
     @Override
     public boolean equals(Object other) {
@@ -248,7 +201,7 @@ public class TimeSlot implements Comparable<TimeSlot> {
     }
 
     /**
-     * Returns a hash code consistent with {@link #equals(Object)}.
+     * Returns a hash code that agrees with equals().
      *
      * @return the start minute, which is unique within one day
      */

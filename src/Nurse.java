@@ -1,83 +1,76 @@
 import java.util.ArrayList;
 
 /**
- * A nurse, who works on a ward and can take blood samples.
+ * Part 2: a nurse.
  *
- * <p>A nurse adds the ward they are based on and the ability to take a blood
- * sample to the details that every health professional already has.</p>
+ * Fields: ward.
+ * Methods: getWard(), getRole(), getDepartment(), toString(),
+ *          getIntroduction(), takeBloodSample().
  *
- * <p><b>Why this class does not implement {@link Prescribable}.</b> The
- * interface describes a capability that only the doctors have. Leaving it off
- * this class is not an omission: it is the design statement that a nurse cannot
- * prescribe. Because the capability lives in an interface rather than in the
- * class hierarchy, the compiler enforces that rule and the demonstration can
- * check it with {@code instanceof}.</p>
- *
- * @author Ziliang Lu (25259146)
- * @version 1.3
+ * It extends HealthProfessional but does not implement Prescribable, because a
+ * nurse cannot prescribe medication.
  */
 public class Nurse extends HealthProfessional {
 
-    /** The ward used when a caller supplies nothing usable. */
-    private static final String DEFAULT_WARD = "Unassigned ward";
+    private static final String DEFAULT_WARD = "Unassigned ward";   // fallback ward
 
-    /**
-     * The ward this nurse is based on.
-     */
-    private String ward;
+    private String ward;   // the ward this nurse works on
 
     /**
      * Creates a nurse who works the default weekdays.
      *
-     * @param identifier the professional's identifier; only the digits of this
-     *        text are kept
-     * @param name the professional's name; blank text is replaced by a
-     *        placeholder so that the object is never nameless
-     * @param ward the ward, for example "Ward 3"; blank text is replaced by a
-     *        placeholder
+     * @param identifier digits only, for example "4001"
+     * @param name the nurse's name
+     * @param gender Female, Male or Other
+     * @param ward the ward, for example "Ward 3"
      */
-    public Nurse(String identifier, String name, String ward) {
-        // The parent's constructor deals with the identifier, the name and the
-        // working days; the ward is stored here because only a nurse has one.
-        super(identifier, name);
+    public Nurse(String identifier, String name, String gender, String ward) {
+        super(identifier, name, gender);
         this.ward = cleanText(ward, DEFAULT_WARD);
     }
 
     /**
      * Creates a nurse who works the given weekdays.
      *
-     * @param identifier the professional's identifier; only the digits of this
-     *        text are kept
-     * @param name the professional's name; blank text is replaced by a
-     *        placeholder so that the object is never nameless
-     * @param workingDays the weekdays this professional works; unknown names
-     *        and duplicates are dropped, and an empty result falls back to the
-     *        default schedule
-     * @param ward the ward, for example "Ward 3"; blank text is replaced by a
-     *        placeholder
+     * @param identifier digits only, for example "4001"
+     * @param name the nurse's name
+     * @param gender Female, Male or Other
+     * @param workingDays the weekdays this nurse works
+     * @param ward the ward, for example "Ward 3"
      */
-    public Nurse(String identifier, String name, ArrayList<String> workingDays, String ward) {
-        super(identifier, name, workingDays);
+    public Nurse(String identifier, String name, String gender,
+                 ArrayList<String> workingDays, String ward) {
+        super(identifier, name, gender, workingDays);
         this.ward = cleanText(ward, DEFAULT_WARD);
     }
 
     /**
-     * Returns the ward this nurse is based on.
+     * Returns the ward.
      *
-     * @return the ward, never empty
+     * @return the ward, for example "Ward 3"
      */
     public String getWard() {
         return ward;
     }
 
     /**
-     * Returns the kind of health professional this object is.
+     * Returns the role of this object.
      *
      * @return "Nurse"
      */
     @Override
     public String getRole() {
         return "Nurse";
+    }
+
+    /**
+     * Returns the department of this type.
+     *
+     * @return "Nursing"
+     */
+    @Override
+    public String getDepartment() {
+        return "Nursing";
     }
 
     /**
@@ -92,12 +85,9 @@ public class Nurse extends HealthProfessional {
     }
 
     /**
-     * Returns a one-paragraph introduction for a patient to read.
+     * Returns a one-sentence introduction.
      *
-     * <p>A nurse is introduced by the ward rather than by a room, which is the
-     * one piece of information that tells a patient where to find them.</p>
-     *
-     * @return a sentence describing this nurse and their ward
+     * @return a sentence describing this nurse
      */
     @Override
     public String getIntroduction() {
@@ -108,16 +98,11 @@ public class Nurse extends HealthProfessional {
     /**
      * Takes a blood sample from a patient.
      *
-     * <p>This is the behaviour that belongs to a nurse alone, in the same way
-     * that prescribing belongs to the doctors. Having each type answer a
-     * different question is what stops the hierarchy from being four copies of
-     * the same class.</p>
-     *
      * @param patientName the name of the patient
-     * @return a message describing the sample that was taken, including the ward
+     * @return the sentence that describes the sample that was taken
      */
     public String takeBloodSample(String patientName) {
-        return "Nurse " + getName() + " took a blood sample from "
-             + patientName + " on " + ward + ".";
+        return "Nurse " + getName() + " took a blood sample from " + patientName
+             + " on " + ward + ".";
     }
 }

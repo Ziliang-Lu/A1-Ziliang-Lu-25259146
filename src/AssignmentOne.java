@@ -1,105 +1,110 @@
 import java.util.ArrayList;
-import java.util.Collections;
 
 /**
- * Entry point for the health appointment system.
+ * Part 6: the scripted demonstration of the system.
  *
- * <p>This class holds the {@code main} method that demonstrates the system.
- * There is no user interface and no keyboard input: the demonstration creates
- * the objects itself, exercises their behaviour and prints the results, in the
- * same way that a scripted simulation would stand in for real users.</p>
+ * Methods: main(), printHeading(), createHealthProfessionals(), createPatients(),
+ *          buildWorkingDays(), displayHealthProfessionals(),
+ *          displayIntroductions(), demonstrateProfessionalCapabilities(),
+ *          demonstrateAppointmentManagement(), displayAppointments().
  *
- * <p><b>How the demonstration is organised.</b> {@code main} does no work of
- * its own beyond printing a banner; the real steps are separate methods with
- * names that say what they do. A {@code main} method that filled the screen
- * with details would be hard to read and impossible to reuse, so each step is
- * kept small and can be called again once Parts 4 to 6 add more to show.</p>
- *
- * <p><b>What this stage covers.</b> Parts 1 to 5 of the assessment: creating
- * health professionals of several types, storing them together as their common
- * parent type, displaying their details and their introductions, booking
- * appointments that order themselves by time, and managing the day's bookings
- * through the appointment manager.</p>
- *
- * @author Ziliang Lu (25259146)
- * @version 1.5
+ * Running the program without arguments prints the demonstration. Running it
+ * with the argument "console" prints the demonstration and then starts the
+ * interactive front end in ClinicConsole.
  */
 public class AssignmentOne {
 
     /**
-     * Runs the demonstration.
+     * Runs the demonstration, and the console when it is asked for.
      *
-     * <p>Only the order of the steps lives here, which makes the flow of the
-     * demonstration obvious at a glance: the professionals are created once and
-     * then handed to the step that displays them.</p>
-     *
-     * @param args command line arguments, not used by this program
+     * @param commandLineArguments the words typed after the class name; the word
+     *        "console" starts the interactive front end
      */
-    public static void main(String[] args) {
+    public static void main(String[] commandLineArguments) {
         System.out.println("PROG2004 Assessment 1 - Health appointment system");
         System.out.println("=================================================");
         System.out.println();
 
         ArrayList<HealthProfessional> professionals = createHealthProfessionals();
+        ArrayList<Patient> patients = createPatients();
+
         displayHealthProfessionals(professionals);
         displayIntroductions(professionals);
-        demonstrateAppointmentOrdering(professionals);
-        demonstrateAppointmentManagement(professionals);
+        demonstrateProfessionalCapabilities(professionals);
+        demonstrateAppointmentManagement(professionals, patients);
+
+        System.out.println("End of demonstration.");
+
+        if (commandLineArguments.length > 0 && commandLineArguments[0].equals("console")) {
+            ClinicConsole console = new ClinicConsole(professionals, patients);
+            console.run();
+        } else {
+            System.out.println();
+            System.out.println("Run with the word console after the class name to use the");
+            System.out.println("interactive front end: java -cp out AssignmentOne console");
+        }
     }
 
     /**
-     * Creates the health professionals used in the demonstration.
+     * Prints a heading with an underline as long as the heading.
      *
-     * <p>Every object is created through its concrete type, because that is
-     * what decides what the object holds. They are then added to a list typed
-     * as the parent class, which is what lets the display step handle all of
-     * them with one piece of code.</p>
-     *
-     * <p>The mix of constructors is deliberate: most professionals are created
-     * with the shorter constructor so the default schedule shows up in the
-     * output, and the rest are created with the full constructor so that a
-     * supplied schedule is clearly different.</p>
+     * @param heading the text to print
+     */
+    private static void printHeading(String heading) {
+        String underline = "";
+
+        // the underline is built from the heading, so the two cannot disagree
+        for (int index = 0; index < heading.length(); index++) {
+            underline = underline + "-";
+        }
+
+        System.out.println(heading);
+        System.out.println(underline);
+        System.out.println();
+    }
+
+    /**
+     * Creates the five doctors of the clinic.
      *
      * @return the list of health professionals
      */
     private static ArrayList<HealthProfessional> createHealthProfessionals() {
         ArrayList<HealthProfessional> professionals = new ArrayList<HealthProfessional>();
 
-        // Three general practitioners. The first two use the shorter
-        // constructor, so they inherit the default working days.
-        professionals.add(new GeneralPractitioner("1001", "Alice Brown", "Room 4"));
-        professionals.add(new GeneralPractitioner("1002", "Michael Chen", "Room 5"));
+        // two general practitioners, one specialist, one surgeon and one nurse,
+        // so all four types of the hierarchy are on duty
+        professionals.add(new GeneralPractitioner("1001", "Alice Brown", "Female", "Room 4"));
+        professionals.add(new GeneralPractitioner("1002", "David Kim", "Male", "Room 5"));
 
-        // The third one supplies its own schedule, which proves that the full
-        // constructor changes only the days and nothing else.
-        professionals.add(new GeneralPractitioner("1003", "Priya Nair",
-                buildWorkingDays("Tuesday", "Thursday", "Friday"), "Room 6"));
+        // this one uses the full constructor with its own working days
+        professionals.add(new Specialist("2001", "Daniel Roberts", "Male",
+                buildWorkingDays("Monday", "Tuesday", "Wednesday"), "Paediatrician"));
 
-        // One to two of each of the other types, as the assessment asks. The
-        // list is typed as HealthProfessional, so nothing here has to know
-        // which subclass will be added next.
-        professionals.add(new Specialist("2001", "Daniel Roberts", "Paediatrician"));
-        professionals.add(new Specialist("2002", "Sofia Alvarez",
-                buildWorkingDays("Monday", "Thursday", "Saturday"), "Cardiologist"));
-
-        professionals.add(new Surgeon("3001", "James O'Connor", "Theatre 2"));
-        professionals.add(new Surgeon("3002", "Wei Zhang",
-                buildWorkingDays("Tuesday", "Wednesday", "Friday"), "Theatre 1"));
-
-        professionals.add(new Nurse("4001", "Emma Wilson", "Ward 3"));
-        professionals.add(new Nurse("4002", "Omar Haddad",
-                buildWorkingDays("Monday", "Tuesday", "Saturday"), "Ward 5"));
+        professionals.add(new Surgeon("3001", "James O'Connor", "Male", "Theatre 2"));
+        professionals.add(new Nurse("4001", "Emma Wilson", "Female", "Ward 3"));
 
         return professionals;
     }
 
     /**
-     * Builds a list of three weekday names.
+     * Creates the five patients of the clinic.
      *
-     * <p>The clinic works in three-day schedules, so this helper keeps the
-     * constructor calls above short. Building the list inline for every
-     * professional would repeat the same four lines nine times and make the
-     * list of professionals hard to scan.</p>
+     * @return the list of patients
+     */
+    private static ArrayList<Patient> createPatients() {
+        ArrayList<Patient> patients = new ArrayList<Patient>();
+
+        patients.add(new Patient("Michael Chen", "0412 345 678"));
+        patients.add(new Patient("Sofia Rossi", "0498 765 432"));
+        patients.add(new Patient("Oliver Grant", "0401 222 333"));
+        patients.add(new Patient("Grace Lin", "0455 111 222"));
+        patients.add(new Patient("Noah Patel", "0433 777 888"));
+
+        return patients;
+    }
+
+    /**
+     * Builds a list of three weekday names.
      *
      * @param first the first weekday
      * @param second the second weekday
@@ -116,31 +121,18 @@ public class AssignmentOne {
     }
 
     /**
-     * Displays the details of every health professional in the list.
-     *
-     * <p>The list is typed as the parent class, so this method does not know
-     * or care which concrete type each element is. When a professional is
-     * printed, that object's own {@code toString()} runs, and its
-     * {@code toString()} in turn calls its own {@code getRole()} and appends
-     * its own extra details. This is polymorphism: one loop, many types.</p>
+     * Displays every health professional in the list.
      *
      * @param professionals the health professionals to display
      */
     private static void displayHealthProfessionals(
             ArrayList<HealthProfessional> professionals) {
-        System.out.println("Health professionals at the clinic");
-        System.out.println("----------------------------------");
-        System.out.println();
+        printHeading("Health professionals at the clinic");
 
-        // A plain counting loop is used instead of the shorter for-each form
-        // because the demonstration also needs the position for nothing else
-        // yet, and the counting loop is the form taught in Module 1.
+        // the list is typed as the parent class, so each object prints with its
+        // own toString() and no type has to be handled separately
         for (int index = 0; index < professionals.size(); index++) {
-            HealthProfessional professional = professionals.get(index);
-            System.out.println(professional);
-
-            // A blank line after each entry keeps nine records from running
-            // together into one unreadable block.
+            System.out.println(professionals.get(index));
             System.out.println();
         }
 
@@ -150,18 +142,11 @@ public class AssignmentOne {
     /**
      * Displays a written introduction for every health professional.
      *
-     * <p>The same method is called on every object, yet each subtype answers
-     * with its own sentence, because {@code getIntroduction()} is overridden in
-     * every concrete class. Nothing in this loop mentions a subtype, and no
-     * subtype has to be handled separately.</p>
-     *
      * @param professionals the health professionals to introduce
      */
     private static void displayIntroductions(ArrayList<HealthProfessional> professionals) {
         System.out.println();
-        System.out.println("Who works at the clinic");
-        System.out.println("-----------------------");
-        System.out.println();
+        printHeading("Who works at the clinic");
 
         for (int index = 0; index < professionals.size(); index++) {
             System.out.println(professionals.get(index).getIntroduction());
@@ -170,148 +155,113 @@ public class AssignmentOne {
     }
 
     /**
-     * Demonstrates that appointments order themselves by time.
+     * Shows the behaviour that belongs to each kind of professional.
      *
-     * <p>The appointments are created deliberately out of order, printed in the
-     * order they were created, sorted with {@code Collections.sort(...)}, and
-     * printed again. Because {@code Appointment} implements
-     * {@code Comparable<Appointment>}, the sort needs to be told nothing about
-     * how to compare two appointments.</p>
-     *
-     * <p>The last part of the method shows the refusal: booking without a health
-     * professional returns {@code null}, so an incomplete appointment cannot be
-     * created in the first place.</p>
-     *
-     * @param professionals the health professionals the appointments are booked
-     *        with
+     * @param professionals the health professionals to exercise
      */
-    private static void demonstrateAppointmentOrdering(
+    private static void demonstrateProfessionalCapabilities(
             ArrayList<HealthProfessional> professionals) {
-        ArrayList<TimeSlot> dailySchedule = TimeSlot.createDailySchedule();
-        ArrayList<Appointment> appointments = new ArrayList<Appointment>();
+        printHeading("What each professional can do");
 
-        Patient michael = new Patient("Michael Chen", "0412 345 678");
-        Patient sofia = new Patient("Sofia Rossi", "0498 765 432");
-        Patient oliver = new Patient("Oliver Grant", "0401 222 333");
+        for (int index = 0; index < professionals.size(); index++) {
+            HealthProfessional professional = professionals.get(index);
 
-        // The slots are picked so the list is not already in time order.
-        // Position 6 is 11:00, position 3 is 09:30, position 1 is 08:30 and
-        // position 4 is 10:00 on the standard timetable.
-        appointments.add(Appointment.book(michael, professionals.get(0), dailySchedule.get(6)));
-        appointments.add(Appointment.book(sofia, professionals.get(3), dailySchedule.get(3)));
-        appointments.add(Appointment.book(oliver, professionals.get(5), dailySchedule.get(1)));
-        appointments.add(Appointment.book(michael, professionals.get(7), dailySchedule.get(4)));
+            // the cast only happens after the object has been tested for the
+            // interface, which is the safe order
+            if (professional instanceof Prescribable) {
+                Prescribable prescriber = (Prescribable) professional;
+                System.out.println(prescriber.prescribe("paracetamol", "Michael Chen"));
+            }
 
-        System.out.println("Appointments in the order they were booked");
-        System.out.println("------------------------------------------");
-        System.out.println();
-        displayAppointments(appointments);
+            if (professional instanceof Surgeon) {
+                Surgeon surgeon = (Surgeon) professional;
+                System.out.println(surgeon.performOperation("appendectomy", "Oliver Grant"));
+            }
 
-        System.out.println();
-        System.out.println("The same appointments sorted by time");
-        System.out.println("------------------------------------");
-        System.out.println();
-
-        // Collections.sort only needs the interface: the list says what to sort
-        // and Appointment says how two appointments compare with each other.
-        Collections.sort(appointments);
-        displayAppointments(appointments);
-
-        System.out.println();
-        System.out.println("Attempt to book an appointment without a professional");
-        System.out.println("-----------------------------------------------------");
-
-        Appointment incomplete = Appointment.book(michael, null, dailySchedule.get(2));
-        if (incomplete == null) {
-            System.out.println("Cannot book: the health professional is missing.");
-        } else {
-            System.out.println("Unexpected: the appointment was created.");
+            if (professional instanceof Nurse) {
+                Nurse nurse = (Nurse) professional;
+                System.out.println(nurse.takeBloodSample("Sofia Rossi"));
+            }
         }
+
+        System.out.println();
+        System.out.println("A nurse cannot prescribe, which is why no prescription appears");
+        System.out.println("for the nurse above.");
     }
 
     /**
-     * Demonstrates the appointment manager end to end.
+     * Demonstrates the appointment manager with normal and error cases.
      *
-     * <p>The sequence follows the way a receptionist works through a day: book
-     * a few appointments, see a double booking being refused, look at the day in
-     * time order, look at one professional's list and one patient's list,
-     * cancel a booking by time and then by patient, and finally try to cancel
-     * something that no longer exists.</p>
-     *
-     * <p>Every method call returns its own message and none of them throws, so a
-     * refused booking is an ordinary line of output rather than a crash. That is
-     * what the assessment asks for when it says a warning is returned when an
-     * action cannot be performed.</p>
-     *
-     * @param professionals the health professionals the appointments are booked
-     *        with
+     * @param professionals the doctors the appointments are booked with
+     * @param patients the patients who book
      */
     private static void demonstrateAppointmentManagement(
-            ArrayList<HealthProfessional> professionals) {
+            ArrayList<HealthProfessional> professionals, ArrayList<Patient> patients) {
         AppointmentManager manager = new AppointmentManager();
         ArrayList<TimeSlot> schedule = TimeSlot.createDailySchedule();
 
-        Patient michael = new Patient("Michael Chen", "0412 345 678");
-        Patient sofia = new Patient("Sofia Rossi", "0498 765 432");
-        Patient oliver = new Patient("Oliver Grant", "0401 222 333");
+        Patient michael = patients.get(0);
+        Patient sofia = patients.get(1);
+        Patient oliver = patients.get(2);
 
-        // Short local names keep the calls below readable; each one still points
-        // at the same object that is stored in the list of professionals.
         HealthProfessional alice = professionals.get(0);
-        HealthProfessional daniel = professionals.get(3);
-        HealthProfessional james = professionals.get(5);
-        HealthProfessional emma = professionals.get(7);
+        HealthProfessional daniel = professionals.get(2);
+        HealthProfessional james = professionals.get(3);
+        HealthProfessional emma = professionals.get(4);
 
-        // Position 2 is 09:00, position 1 is 08:30 and position 4 is 10:00 on
-        // the standard timetable.
-        TimeSlot nineOClock = schedule.get(2);
+        // position 1 is 08:30, position 2 is 09:00 and position 4 is 10:00
         TimeSlot eightThirty = schedule.get(1);
+        TimeSlot nineOClock = schedule.get(2);
         TimeSlot tenOClock = schedule.get(4);
 
         System.out.println();
-        System.out.println("Booking appointments");
-        System.out.println("--------------------");
+        printHeading("Booking appointments");
         System.out.println(manager.addAppointment(michael, alice, nineOClock));
         System.out.println(manager.addAppointment(sofia, daniel, nineOClock));
         System.out.println(manager.addAppointment(oliver, james, eightThirty));
         System.out.println(manager.addAppointment(michael, emma, tenOClock));
 
-        // Alice is free at 08:30 but already booked at 09:00, so this one must
-        // be refused even though the patient is different.
+        // Alice is free at 08:30 but booked at 09:00, so this booking is refused
         System.out.println(manager.addAppointment(michael, alice, nineOClock));
 
         System.out.println();
-        System.out.println("All appointments, earliest first");
-        System.out.println("--------------------------------");
+        printHeading("All appointments, earliest first");
         System.out.println(manager.getAppointmentCount() + " appointment(s) booked.");
         System.out.println();
         displayAppointments(manager.getAllAppointments());
 
-        System.out.println("Appointments for professional 1001");
-        System.out.println("----------------------------------");
+        printHeading("Appointments for professional 1001");
         displayAppointments(manager.filterByHealthProfessional("1001"));
 
-        System.out.println("Appointments for patient 0412345678");
-        System.out.println("-----------------------------------");
+        printHeading("Appointments for patient 0412345678");
         displayAppointments(manager.filterByPatientPhoneNumber("0412345678"));
 
-        System.out.println("Cancelling the 09:00 appointment with professional 1001");
-        System.out.println("------------------------------------------------------");
+        printHeading("Cancelling the 09:00 appointment with professional 1001");
         System.out.println(manager.cancelByHealthProfessionalAndTime("1001", nineOClock));
 
         System.out.println();
-        System.out.println("Cancelling every appointment for patient 0412345678");
-        System.out.println("---------------------------------------------------");
+        printHeading("Cancelling every appointment for patient 0412345678");
         System.out.println(manager.cancelByPatientPhoneNumber("0412345678"));
 
         System.out.println();
-        System.out.println("Trying to cancel the same appointment again");
-        System.out.println("-------------------------------------------");
+        printHeading("Trying to cancel the same appointment again");
         System.out.println(manager.cancelByHealthProfessionalAndTime("1001", nineOClock));
 
         System.out.println();
-        System.out.println("Appointments left at the end of the day");
-        System.out.println("---------------------------------------");
+        printHeading("Requesting a time that is not a clinic slot");
+        TimeSlot notASlot = TimeSlot.findByLabel("11:15");
+        if (notASlot == null) {
+            System.out.println("Cannot book: 11:15 is not one of the clinic's time slots.");
+        } else {
+            System.out.println(manager.addAppointment(michael, alice, notASlot));
+        }
+
+        System.out.println();
+        printHeading("Booking without a health professional");
+        System.out.println(manager.addAppointment(michael, null, tenOClock));
+
+        System.out.println();
+        printHeading("Appointments left at the end of the day");
         System.out.println(manager.getAppointmentCount() + " appointment(s) booked.");
         System.out.println();
         displayAppointments(manager.getAllAppointments());

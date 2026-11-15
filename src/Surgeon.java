@@ -1,79 +1,59 @@
 import java.util.ArrayList;
 
 /**
- * A surgeon, who operates in a theatre as well as seeing patients.
+ * Part 2: a surgeon.
  *
- * <p>A surgeon adds the operating theatre they work in, the ability to
- * prescribe medication, and the ability to perform an operation to the details
- * that every health professional already has.</p>
+ * Fields: theatre.
+ * Methods: getTheatre(), getRole(), getDepartment(), toString(),
+ *          getIntroduction(), prescribe(), performOperation().
  *
- * <p><b>Why the operation is a method rather than a field.</b> Recording the
- * operations in a list would need the history to be kept, sorted and reported,
- * and the assessment does not ask for any of that. A method that answers the
- * question "what did this surgeon do" is enough to show behaviour that no other
- * type has, and it can be called from the demonstration without storing
- * anything.</p>
- *
- * @author Ziliang Lu (25259146)
- * @version 1.3
+ * It extends HealthProfessional and implements Prescribable.
  */
 public class Surgeon extends HealthProfessional implements Prescribable {
 
-    /** The theatre used when a caller supplies nothing usable. */
-    private static final String DEFAULT_THEATRE = "Unassigned theatre";
+    private static final String DEFAULT_THEATRE = "Unassigned theatre";   // fallback theatre
 
-    /**
-     * The operating theatre this surgeon works in.
-     */
-    private String theatre;
+    private String theatre;   // the operating theatre
 
     /**
      * Creates a surgeon who works the default weekdays.
      *
-     * @param identifier the professional's identifier; only the digits of this
-     *        text are kept
-     * @param name the professional's name; blank text is replaced by a
-     *        placeholder so that the object is never nameless
-     * @param theatre the operating theatre, for example "Theatre 2"; blank text
-     *        is replaced by a placeholder
+     * @param identifier digits only, for example "3001"
+     * @param name the doctor's name
+     * @param gender Female, Male or Other
+     * @param theatre the operating theatre, for example "Theatre 2"
      */
-    public Surgeon(String identifier, String name, String theatre) {
-        // The parent cleans and stores the shared values; the theatre is this
-        // class's own data and is stored afterwards.
-        super(identifier, name);
+    public Surgeon(String identifier, String name, String gender, String theatre) {
+        super(identifier, name, gender);
         this.theatre = cleanText(theatre, DEFAULT_THEATRE);
     }
 
     /**
      * Creates a surgeon who works the given weekdays.
      *
-     * @param identifier the professional's identifier; only the digits of this
-     *        text are kept
-     * @param name the professional's name; blank text is replaced by a
-     *        placeholder so that the object is never nameless
-     * @param workingDays the weekdays this professional works; unknown names
-     *        and duplicates are dropped, and an empty result falls back to the
-     *        default schedule
-     * @param theatre the operating theatre, for example "Theatre 2"; blank text
-     *        is replaced by a placeholder
+     * @param identifier digits only, for example "3001"
+     * @param name the doctor's name
+     * @param gender Female, Male or Other
+     * @param workingDays the weekdays this doctor works
+     * @param theatre the operating theatre, for example "Theatre 2"
      */
-    public Surgeon(String identifier, String name, ArrayList<String> workingDays,
-                   String theatre) {
-        super(identifier, name, workingDays);
+    public Surgeon(String identifier, String name, String gender,
+                   ArrayList<String> workingDays, String theatre) {
+        super(identifier, name, gender, workingDays);
         this.theatre = cleanText(theatre, DEFAULT_THEATRE);
     }
 
     /**
-     * Returns the operating theatre this surgeon works in.
+     * Returns the operating theatre.
      *
-     * @return the theatre, never empty
+     * @return the theatre, for example "Theatre 2"
      */
     public String getTheatre() {
         return theatre;
     }
 
     /**
-     * Returns the kind of health professional this object is.
+     * Returns the role of this object.
      *
      * @return "Surgeon"
      */
@@ -83,9 +63,19 @@ public class Surgeon extends HealthProfessional implements Prescribable {
     }
 
     /**
+     * Returns the department of this type.
+     *
+     * @return "Surgery"
+     */
+    @Override
+    public String getDepartment() {
+        return "Surgery";
+    }
+
+    /**
      * Returns the shared details plus the operating theatre.
      *
-     * @return a multi-line description of this surgeon
+     * @return a multi-line description of this doctor
      */
     @Override
     public String toString() {
@@ -94,9 +84,9 @@ public class Surgeon extends HealthProfessional implements Prescribable {
     }
 
     /**
-     * Returns a one-paragraph introduction for a patient to read.
+     * Returns a one-sentence introduction.
      *
-     * @return a sentence describing this surgeon and their theatre
+     * @return a sentence describing this surgeon
      */
     @Override
     public String getIntroduction() {
@@ -108,8 +98,8 @@ public class Surgeon extends HealthProfessional implements Prescribable {
      * Prescribes a medication to a patient.
      *
      * @param medication the name of the medication
-     * @param patientName the name of the patient receiving it
-     * @return a message describing the prescription
+     * @param patientName the name of the patient
+     * @return the sentence that describes the prescription
      */
     @Override
     public String prescribe(String medication, String patientName) {
@@ -120,13 +110,9 @@ public class Surgeon extends HealthProfessional implements Prescribable {
     /**
      * Performs an operation on a patient.
      *
-     * <p>This is the behaviour no other type has, which is why the four types
-     * are not just four copies of the same class: each one answers a different
-     * question that the clinic needs to ask.</p>
-     *
      * @param procedure the name of the procedure
      * @param patientName the name of the patient
-     * @return a message describing the operation, including the theatre
+     * @return the sentence that describes the operation
      */
     public String performOperation(String procedure, String patientName) {
         return "Dr " + getName() + " performed " + procedure

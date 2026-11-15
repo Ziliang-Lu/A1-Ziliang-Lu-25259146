@@ -1,128 +1,66 @@
 import java.util.ArrayList;
 
 /**
- * Models a health professional who works at the clinic.
+ * Part 1: models a health professional.
  *
- * <p>This class holds the three pieces of information that every health
- * professional has, whatever their specialty: an identifier made up of digits
- * only, a name, and the fixed set of weekdays on which they work. It also
- * holds the behaviour that goes with that information, so the concrete types
- * only have to add what makes them different.</p>
+ * Fields: identifier, name, gender, workingDays.
+ * Methods: getIdentifier(), getName(), getGender(), getWorkingDays(), worksOn(),
+ *          getRole(), getDepartment(), equals(), hashCode(), toString(),
+ *          getIntroduction().
  *
- * <p><b>Why the class is abstract.</b> The clinic never records a health
- * professional who has no specialty, so a plain {@code new
- * HealthProfessional(...)} would describe nothing that exists. Declaring the
- * class {@code abstract} makes that mistake impossible to compile, and every
- * concrete subclass is forced to answer {@link #getRole()} before it can be
- * created. This is the abstraction pillar from Module 3.</p>
- *
- * <p><b>How the data is protected.</b> All three fields are {@code private}
- * and the class publishes getters only, so code outside this class can read a
- * professional's details but can never put the object into an inconsistent
- * state. The constructor is the single place where the fields are set, and it
- * cleans what it is given before storing it. This is the encapsulation pillar
- * from Module 2.</p>
- *
- * <p><b>Why there are two constructors.</b> Most professionals work the same
- * three days, so a caller who does not care about the schedule supplies only
- * the identifier and the name. The shorter constructor delegates to the longer
- * one with {@code this(...)}, so the cleaning code is written once and cannot
- * drift apart. This is constructor overloading and constructor chaining, both
- * from Module 3.</p>
- *
- * @author Ziliang Lu (25259146)
- * @version 1.4
+ * The class is abstract, so it cannot be created directly.
  */
 public abstract class HealthProfessional {
 
-    /**
-     * The only weekday names that a working day is allowed to be.
-     *
-     * <p>The names are kept in one place so that the validation below and the
-     * default schedule cannot disagree with each other. If the clinic ever
-     * changed the names it uses, this array would be the only thing to edit.</p>
-     */
+    // the seven names a working day may use
     private static final String[] WEEKDAY_NAMES = {
         "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
     };
 
+    // the three genders the clinic records
+    private static final String[] GENDER_NAMES = {"Female", "Male", "Other"};
+
+    private static final String DEFAULT_IDENTIFIER = "0";   // fallback identifier
+    private static final String DEFAULT_NAME = "Unnamed professional";   // fallback name
+    private static final String DEFAULT_GENDER = "Other";   // fallback gender
+
+    private String identifier;              // digits only, never empty
+    private String name;                    // trimmed, never empty
+    private String gender;                  // Female, Male or Other
+    private ArrayList<String> workingDays;  // validated, no duplicates
+
     /**
-     * The identifier used when a caller supplies nothing usable.
+     * Creates a professional who works the default weekdays.
      *
-     * <p>It is named as a constant rather than written as "0" inside the
-     * method, so the fallback value can be changed in one place and cannot be
-     * mistyped somewhere else.</p>
+     * @param identifier digits only, for example "1001"
+     * @param name the professional's name
+     * @param gender Female, Male or Other
      */
-    private static final String DEFAULT_IDENTIFIER = "0";
-
-    /**
-     * The name used when a caller supplies nothing usable.
-     *
-     * <p>A professional with a blank name would print as an empty line, which
-     * looks like a bug in the output. A visible placeholder is both honest and
-     * easier to spot in the demonstration.</p>
-     */
-    private static final String DEFAULT_NAME = "Unnamed professional";
-
-    /**
-     * Identifies the professional. Only digits are ever stored here.
-     */
-    private String identifier;
-
-    /**
-     * The professional's name. It is trimmed and never empty.
-     */
-    private String name;
-
-    /**
-     * The weekdays this professional works, in the order the caller supplied
-     * them, without duplicates and without unknown names.
-     */
-    private ArrayList<String> workingDays;
-
-    /**
-     * Creates a health professional who works the default weekdays
-     * (Monday, Wednesday and Friday).
-     *
-     * @param identifier the professional's identifier; only the digits of this
-     *        text are kept
-     * @param name the professional's name; blank text is replaced by a
-     *        placeholder so that the object is never nameless
-     */
-    public HealthProfessional(String identifier, String name) {
-        // Constructor chaining: the shorter constructor does no work of its
-        // own. It hands the default schedule to the longer constructor, so both
-        // constructors end up running exactly the same cleaning code.
-        this(identifier, name, createDefaultWorkingDays());
+    public HealthProfessional(String identifier, String name, String gender) {
+        // passes the default working days to the full constructor
+        this(identifier, name, gender, createDefaultWorkingDays());
     }
 
     /**
-     * Creates a health professional who works the given weekdays.
+     * Creates a professional who works the given weekdays.
      *
-     * @param identifier the professional's identifier; only the digits of this
-     *        text are kept
-     * @param name the professional's name; blank text is replaced by a
-     *        placeholder so that the object is never nameless
-     * @param workingDays the weekdays this professional works; unknown names
-     *        and duplicates are dropped, and an empty result falls back to the
-     *        default schedule
+     * @param identifier digits only, for example "1001"
+     * @param name the professional's name
+     * @param gender Female, Male or Other
+     * @param workingDays the weekdays this professional works
      */
-    public HealthProfessional(String identifier, String name,
+    public HealthProfessional(String identifier, String name, String gender,
                               ArrayList<String> workingDays) {
         this.identifier = cleanIdentifier(identifier);
         this.name = cleanText(name, DEFAULT_NAME);
+        this.gender = cleanGender(gender);
         this.workingDays = cleanWorkingDays(workingDays);
     }
 
     /**
-     * Creates the weekdays a professional works when the caller does not
-     * supply any.
+     * Builds the weekdays used when the caller supplies none.
      *
-     * <p>A new list is built on every call instead of a shared constant being
-     * returned, because a caller that edited a shared list would silently
-     * change the default for every professional created afterwards.</p>
-     *
-     * @return a new list holding Monday, Wednesday and Friday
+     * @return a new list with Monday, Wednesday and Friday
      */
     private static ArrayList<String> createDefaultWorkingDays() {
         ArrayList<String> days = new ArrayList<String>();
@@ -133,25 +71,17 @@ public abstract class HealthProfessional {
     }
 
     /**
-     * Keeps the digits of the supplied identifier and nothing else, so the
-     * rule "an identifier is a number" can never be broken.
+     * Keeps the digits of the identifier and nothing else.
      *
-     * @param identifier the identifier supplied by the caller, which may be
-     *        null, blank, or contain letters and punctuation
-     * @return an identifier containing digits only; never null and never empty
+     * @param identifier the text supplied by the caller
+     * @return a string of digits, never empty
      */
     private static String cleanIdentifier(String identifier) {
         String digitsOnly = "";
 
-        // A null check comes first because every method called on the text
-        // would fail on null, and a caller that "forgot" the identifier is an
-        // ordinary mistake rather than an exceptional situation.
         if (identifier != null) {
-
-            // The characters are inspected one at a time with a simple
-            // comparison instead of a regular expression or Character.isDigit:
-            // comparing two characters only needs the operators from Module 1,
-            // and the rule stays readable to anyone marking the code.
+            // compares each character with '0' and '9' instead of using a
+            // regular expression, so only Module 1 operators are needed
             for (int index = 0; index < identifier.length(); index++) {
                 char character = identifier.charAt(index);
                 if (character >= '0' && character <= '9') {
@@ -160,8 +90,6 @@ public abstract class HealthProfessional {
             }
         }
 
-        // Falling back to a constant keeps the promise that the getter always
-        // returns a usable identifier, so no caller has to check for null.
         if (digitsOnly.length() == 0) {
             return DEFAULT_IDENTIFIER;
         }
@@ -171,13 +99,9 @@ public abstract class HealthProfessional {
     /**
      * Trims a piece of text and falls back to a default when nothing is left.
      *
-     * <p>The method is {@code protected static} because every subclass needs
-     * the same treatment for its own text fields, and the treatment does not
-     * depend on any object being created.</p>
-     *
-     * @param text the text supplied by the caller, which may be null
-     * @param fallback the value to use when the text is empty
-     * @return the trimmed text, or the fallback when there is nothing left
+     * @param text the text supplied by the caller, may be null
+     * @param fallback the value returned when the text is empty
+     * @return the trimmed text, or the fallback
      */
     protected static String cleanText(String text, String fallback) {
         if (text == null) {
@@ -191,15 +115,28 @@ public abstract class HealthProfessional {
     }
 
     /**
-     * Keeps only the supplied days that are real weekday names, removes
-     * duplicates, and falls back to the default days when none are left.
+     * Keeps the gender only when it is Female, Male or Other.
      *
-     * <p>Filtering here, rather than trusting the caller, is what makes the
-     * working schedule safe to print and to compare: the class never holds a
-     * name such as "Funday" that the rest of the clinic would not recognise.</p>
+     * @param gender the text supplied by the caller
+     * @return one of the three accepted values, or "Other"
+     */
+    private static String cleanGender(String gender) {
+        String candidate = cleanText(gender, DEFAULT_GENDER);
+
+        for (int index = 0; index < GENDER_NAMES.length; index++) {
+            if (GENDER_NAMES[index].equals(candidate)) {
+                return candidate;
+            }
+        }
+        return DEFAULT_GENDER;
+    }
+
+    /**
+     * Keeps the real weekday names, removes duplicates, and falls back to the
+     * default days when none are left.
      *
-     * @param days the weekdays supplied by the caller, which may be null
-     * @return a clean list of weekday names, never null and never empty
+     * @param days the weekdays supplied by the caller, may be null
+     * @return a clean list of weekday names, never empty
      */
     private static ArrayList<String> cleanWorkingDays(ArrayList<String> days) {
         ArrayList<String> cleaned = new ArrayList<String>();
@@ -208,9 +145,7 @@ public abstract class HealthProfessional {
             for (String day : days) {
                 String candidate = cleanText(day, "");
 
-                // An unknown name is dropped and a repeated day is ignored:
-                // "Monday, Monday" would print twice and "Funday" would mean
-                // nothing to any other part of the system.
+                // unknown names are dropped and repeated days are ignored
                 if (isWeekdayName(candidate) && !cleaned.contains(candidate)) {
                     cleaned.add(candidate);
                 }
@@ -226,12 +161,8 @@ public abstract class HealthProfessional {
     /**
      * Tells whether the text is one of the seven weekday names.
      *
-     * <p>The names are compared in a fixed order rather than sorted, because
-     * the order the clinic lists them in is the order people expect to read
-     * them on a printed schedule.</p>
-     *
      * @param text the text to check
-     * @return {@code true} when the text names a weekday
+     * @return true when the text names a weekday
      */
     private static boolean isWeekdayName(String text) {
         for (int index = 0; index < WEEKDAY_NAMES.length; index++) {
@@ -245,32 +176,69 @@ public abstract class HealthProfessional {
     /**
      * Returns the professional's identifier.
      *
-     * <p>There is deliberately no setter. The identifier is what distinguishes
-     * one professional from another, so letting other classes rewrite it later
-     * would allow two records to claim the same identity.</p>
-     *
-     * @return the identifier, digits only, never empty
+     * @return the identifier, digits only
      */
     public String getIdentifier() {
         return identifier;
     }
 
     /**
-     * Tells whether another object describes the same health professional.
+     * Returns the professional's name.
      *
-     * <p>Two professionals are the same person when their identifiers match,
-     * even if the objects are different instances, because the identifier is
-     * what the clinic issues and what the rota uses. The name is deliberately
-     * not part of the test: two people can share a name, and a professional may
-     * change their name without becoming a different person.</p>
+     * @return the name
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Returns the professional's gender.
      *
-     * <p>This is the method the appointment system needs in order to answer "is
-     * this professional already booked at that time", and it is what lets
-     * {@code Appointment.equals(Object)} compare two appointments by the
-     * professional pair rather than by object identity.</p>
+     * @return Female, Male or Other
+     */
+    public String getGender() {
+        return gender;
+    }
+
+    /**
+     * Returns a copy of the working days.
+     *
+     * @return a new list holding the working days
+     */
+    public ArrayList<String> getWorkingDays() {
+        // a copy is returned so the caller cannot change the internal list
+        return new ArrayList<String>(workingDays);
+    }
+
+    /**
+     * Tells whether this professional works on the given day.
+     *
+     * @param day the weekday to check, for example "Monday"
+     * @return true when the professional works that day
+     */
+    public boolean worksOn(String day) {
+        return workingDays.contains(day);
+    }
+
+    /**
+     * Returns the kind of professional this object is.
+     *
+     * @return the role, for example "General Practitioner"
+     */
+    public abstract String getRole();
+
+    /**
+     * Returns the department this professional works in.
+     *
+     * @return the department, for example "General Medicine"
+     */
+    public abstract String getDepartment();
+
+    /**
+     * Compares two professionals by identifier.
      *
      * @param other the object to compare with
-     * @return {@code true} when both objects describe the same identifier
+     * @return true when both objects have the same identifier
      */
     @Override
     public boolean equals(Object other) {
@@ -285,13 +253,9 @@ public abstract class HealthProfessional {
     }
 
     /**
-     * Returns a hash code consistent with {@link #equals(Object)}.
+     * Returns a hash code that agrees with equals().
      *
-     * <p>Equal objects must return the same hash code, so this is built from the
-     * same field the equality test uses. Overriding one of the two without the
-     * other would break any collection that relies on hashing.</p>
-     *
-     * @return a hash code based on the identifier
+     * @return a hash code built from the identifier
      */
     @Override
     public int hashCode() {
@@ -299,111 +263,38 @@ public abstract class HealthProfessional {
     }
 
     /**
-     * Returns the professional's name.
-     *
-     * @return the name, never empty
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * Returns the weekdays this professional works.
-     *
-     * <p>The copy is what makes the encapsulation real: the getter's signature
-     * promises the caller that this list can be read, and returning the copy
-     * keeps the promise that no outside edit can change the schedule that was
-     * validated in the constructor.</p>
-     *
-     * @return a copy of the working days
-     */
-    public ArrayList<String> getWorkingDays() {
-        return new ArrayList<String>(workingDays);
-    }
-
-    /**
-     * Tells whether this professional works on the given day.
-     *
-     * <p>This is the method the appointment system asks before it offers a
-     * booking, so the rule "who works when" stays inside the professional
-     * rather than being spread across the classes that use it.</p>
-     *
-     * @param day the weekday to check, for example "Monday"
-     * @return {@code true} when the professional works that day
-     */
-    public boolean worksOn(String day) {
-        return workingDays.contains(day);
-    }
-
-    /**
-     * Returns a one-paragraph introduction that a patient could read.
-     *
-     * <p>The details printed by {@code toString()} are a record: one field per
-     * line, which is what a list of professionals or an appointment needs. An
-     * introduction is prose, which is what a person needs when the clinic
-     * advertises who works there. The two are kept separate on purpose instead
-     * of one being squeezed out of the other.</p>
-     *
-     * <p>Every subclass overrides this to describe itself in its own words, so
-     * the same method call produces four different sentences. That is
-     * polymorphism doing more than printing fields: the shared signature hides
-     * four different behaviours.</p>
-     *
-     * @return a sentence describing this professional
-     */
-    public String getIntroduction() {
-        return getName() + " is a " + getRole() + " at the clinic, and is "
-             + "available on " + describeWorkingDays() + ".";
-    }
-
-    /**
-     * Returns the kind of health professional this object represents.
-     *
-     * <p>Every concrete subclass must answer this. That is what lets the
-     * shared details be printed without the parent class knowing which subtype
-     * it is dealing with, and it is the method that makes polymorphism work
-     * when the objects are stored together in one list.</p>
-     *
-     * @return the role, for example "General Practitioner"
-     */
-    public abstract String getRole();
-
-    /**
-     * Returns the details every health professional has in common.
-     *
-     * <p>Subclasses call this from their own {@code toString()} and then append
-     * what is unique to them, so the shared part is written once and every type
-     * prints in the same layout.</p>
+     * Returns the details every professional has in common.
      *
      * @return a multi-line description of the shared details
      */
     @Override
     public String toString() {
-        // The label column is padded to fourteen characters so the values line
-        // up underneath each other when several professionals are printed in a
-        // row. The value is built with string concatenation only, which is the
-        // output technique covered in Module 1.
         return "Identifier:   " + identifier + "\n"
              + "Name:         " + name + "\n"
+             + "Gender:       " + gender + "\n"
              + "Role:         " + getRole() + "\n"
+             + "Department:   " + getDepartment() + "\n"
              + "Working days: " + describeWorkingDays();
+    }
+
+    /**
+     * Returns a short introduction that a patient could read.
+     *
+     * @return a sentence describing this professional
+     */
+    public String getIntroduction() {
+        return getName() + " is a " + getRole() + " in " + getDepartment()
+             + ", and is available on " + describeWorkingDays() + ".";
     }
 
     /**
      * Joins the working days into one readable line.
      *
-     * <p>The commas are added between the days rather than after each one, so
-     * the line never ends with a stray comma.</p>
-     *
-     * <p>It is {@code protected} rather than private because the subclasses use
-     * the same phrasing inside their own introductions, and repeating the comma
-     * handling in four classes would be the kind of duplication that
-     * inheritance exists to remove.</p>
-     *
      * @return the working days separated by commas
      */
     protected String describeWorkingDays() {
         String description = "";
+
         for (int index = 0; index < workingDays.size(); index++) {
             if (index > 0) {
                 description = description + ", ";

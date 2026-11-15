@@ -1,86 +1,59 @@
 import java.util.ArrayList;
 
 /**
- * A specialist doctor, for example a paediatrician, radiologist or
- * cardiologist.
+ * Part 2: a specialist doctor.
  *
- * <p>A specialist adds the area of medicine they specialise in, and the ability
- * to prescribe medication, to the details that every health professional
- * already has. The shared data is inherited, so a specialist that is renamed or
- * given a different schedule is changed in one place only.</p>
+ * Fields: specialty.
+ * Methods: getSpecialty(), getRole(), getDepartment(), toString(),
+ *          getIntroduction(), prescribe().
  *
- * <p><b>Why the specialty is a field rather than its own subclass.</b> A
- * paediatrician and a cardiologist do the same job in this system: they see
- * patients in their area, and they prescribe. Making each area a separate class
- * would copy the same code once per area and would not add any behaviour, so
- * the area is recorded as data instead.</p>
- *
- * @author Ziliang Lu (25259146)
- * @version 1.3
+ * It extends HealthProfessional and implements Prescribable.
  */
 public class Specialist extends HealthProfessional implements Prescribable {
 
-    /** The specialty used when a caller supplies nothing usable. */
-    private static final String DEFAULT_SPECIALTY = "General medicine";
+    private static final String DEFAULT_SPECIALTY = "General medicine";   // fallback area
 
-    /**
-     * The area of medicine this specialist works in.
-     */
-    private String specialty;
+    private String specialty;   // the area of medicine
 
     /**
      * Creates a specialist who works the default weekdays.
      *
-     * @param identifier the professional's identifier; only the digits of this
-     *        text are kept
-     * @param name the professional's name; blank text is replaced by a
-     *        placeholder so that the object is never nameless
-     * @param specialty the area of medicine, for example "Paediatrician";
-     *        blank text is replaced by a placeholder
+     * @param identifier digits only, for example "2001"
+     * @param name the doctor's name
+     * @param gender Female, Male or Other
+     * @param specialty the area of medicine, for example "Paediatrician"
      */
-    public Specialist(String identifier, String name, String specialty) {
-        // Only the values the parent understands are passed up. The specialty
-        // belongs to this class alone, so it is stored here after the parent
-        // has finished with its own fields.
-        super(identifier, name);
+    public Specialist(String identifier, String name, String gender, String specialty) {
+        super(identifier, name, gender);
         this.specialty = cleanText(specialty, DEFAULT_SPECIALTY);
     }
 
     /**
      * Creates a specialist who works the given weekdays.
      *
-     * @param identifier the professional's identifier; only the digits of this
-     *        text are kept
-     * @param name the professional's name; blank text is replaced by a
-     *        placeholder so that the object is never nameless
-     * @param workingDays the weekdays this professional works; unknown names
-     *        and duplicates are dropped, and an empty result falls back to the
-     *        default schedule
-     * @param specialty the area of medicine, for example "Paediatrician";
-     *        blank text is replaced by a placeholder
+     * @param identifier digits only, for example "2001"
+     * @param name the doctor's name
+     * @param gender Female, Male or Other
+     * @param workingDays the weekdays this doctor works
+     * @param specialty the area of medicine, for example "Paediatrician"
      */
-    public Specialist(String identifier, String name, ArrayList<String> workingDays,
-                      String specialty) {
-        super(identifier, name, workingDays);
+    public Specialist(String identifier, String name, String gender,
+                      ArrayList<String> workingDays, String specialty) {
+        super(identifier, name, gender, workingDays);
         this.specialty = cleanText(specialty, DEFAULT_SPECIALTY);
     }
 
     /**
-     * Returns the area of medicine this specialist works in.
+     * Returns the area of medicine.
      *
-     * @return the specialty, never empty
+     * @return the specialty, for example "Paediatrician"
      */
     public String getSpecialty() {
         return specialty;
     }
 
     /**
-     * Returns the kind of health professional this object is.
-     *
-     * <p>The role is kept as "Specialist" rather than being merged with the
-     * specialty, so the output always answers the same two questions in the
-     * same order: what kind of professional is this, and what area do they
-     * work in.</p>
+     * Returns the role of this object.
      *
      * @return "Specialist"
      */
@@ -90,13 +63,19 @@ public class Specialist extends HealthProfessional implements Prescribable {
     }
 
     /**
-     * Returns the shared details plus the specialty.
+     * Returns the department of this type.
      *
-     * <p>{@code super.toString()} prints the identifier, the name, the role and
-     * the working days, so this method only adds the one line that is unique to
-     * a specialist.</p>
+     * @return "Specialist Medicine"
+     */
+    @Override
+    public String getDepartment() {
+        return "Specialist Medicine";
+    }
+
+    /**
+     * Returns the shared details plus the area of medicine.
      *
-     * @return a multi-line description of this specialist
+     * @return a multi-line description of this doctor
      */
     @Override
     public String toString() {
@@ -105,13 +84,9 @@ public class Specialist extends HealthProfessional implements Prescribable {
     }
 
     /**
-     * Returns a one-paragraph introduction for a patient to read.
+     * Returns a one-sentence introduction.
      *
-     * <p>"works as a Paediatrician" reads better than "is a Specialist of
-     * Paediatrician", which is why the specialty is placed in the sentence
-     * instead of being appended after the role.</p>
-     *
-     * @return a sentence describing this specialist and their area
+     * @return a sentence describing this specialist
      */
     @Override
     public String getIntroduction() {
@@ -122,13 +97,9 @@ public class Specialist extends HealthProfessional implements Prescribable {
     /**
      * Prescribes a medication to a patient.
      *
-     * <p>The specialty is repeated inside the message because the patient
-     * needs to know which area the doctor works in, while the printed record of
-     * the professional already shows it on its own line.</p>
-     *
      * @param medication the name of the medication
-     * @param patientName the name of the patient receiving it
-     * @return a message describing the prescription
+     * @param patientName the name of the patient
+     * @return the sentence that describes the prescription
      */
     @Override
     public String prescribe(String medication, String patientName) {

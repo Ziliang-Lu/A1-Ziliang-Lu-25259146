@@ -1,84 +1,61 @@
 import java.util.ArrayList;
 
 /**
- * A general practitioner: the doctor a patient normally sees first.
+ * Part 2: a general practitioner.
  *
- * <p>A general practitioner adds a consulting room and the ability to
- * prescribe medication to the details that every health professional already
- * has. Nothing about the identifier, the name or the working days is repeated
- * here, because all of that is inherited from {@link HealthProfessional}.</p>
+ * Fields: clinicRoom.
+ * Methods: getClinicRoom(), getRole(), getDepartment(), toString(),
+ *          getIntroduction(), prescribe().
  *
- * <p><b>Why it implements {@link Prescribable}.</b> Prescribing is something a
- * general practitioner can do, not something they are, so it is a capability
- * rather than a kind of professional. Keeping it in an interface means the
- * nurses cannot prescribe, without the class hierarchy having to be rearranged
- * to express that.</p>
- *
- * @author Ziliang Lu (25259146)
- * @version 1.3
+ * It extends HealthProfessional and implements Prescribable.
  */
 public class GeneralPractitioner extends HealthProfessional implements Prescribable {
 
-    /** The room used when a caller supplies nothing usable. */
-    private static final String DEFAULT_ROOM = "Unassigned room";
+    private static final String DEFAULT_ROOM = "Unassigned room";   // fallback room
 
-    /**
-     * The consulting room this general practitioner works from.
-     */
-    private String clinicRoom;
+    private String clinicRoom;   // the consulting room
 
     /**
      * Creates a general practitioner who works the default weekdays.
      *
-     * @param identifier the professional's identifier; only the digits of this
-     *        text are kept
-     * @param name the professional's name; blank text is replaced by a
-     *        placeholder so that the object is never nameless
-     * @param clinicRoom the consulting room, for example "Room 4"; blank text
-     *        is replaced by a placeholder
+     * @param identifier digits only, for example "1001"
+     * @param name the doctor's name
+     * @param gender Female, Male or Other
+     * @param clinicRoom the room where patients are seen
      */
-    public GeneralPractitioner(String identifier, String name, String clinicRoom) {
-        // super(...) hands the shared values to the parent's constructor, which
-        // cleans and stores them. Without this call the identifier and the name
-        // would have nowhere to live, because those fields are private there.
-        super(identifier, name);
+    public GeneralPractitioner(String identifier, String name, String gender,
+                               String clinicRoom) {
+        // the parent constructor stores the shared values
+        super(identifier, name, gender);
         this.clinicRoom = cleanText(clinicRoom, DEFAULT_ROOM);
     }
 
     /**
      * Creates a general practitioner who works the given weekdays.
      *
-     * @param identifier the professional's identifier; only the digits of this
-     *        text are kept
-     * @param name the professional's name; blank text is replaced by a
-     *        placeholder so that the object is never nameless
-     * @param workingDays the weekdays this professional works; unknown names
-     *        and duplicates are dropped, and an empty result falls back to the
-     *        default schedule
-     * @param clinicRoom the consulting room, for example "Room 4"; blank text
-     *        is replaced by a placeholder
+     * @param identifier digits only, for example "1001"
+     * @param name the doctor's name
+     * @param gender Female, Male or Other
+     * @param workingDays the weekdays this doctor works
+     * @param clinicRoom the room where patients are seen
      */
-    public GeneralPractitioner(String identifier, String name, ArrayList<String> workingDays,
-                               String clinicRoom) {
-        super(identifier, name, workingDays);
+    public GeneralPractitioner(String identifier, String name, String gender,
+                               ArrayList<String> workingDays, String clinicRoom) {
+        super(identifier, name, gender, workingDays);
         this.clinicRoom = cleanText(clinicRoom, DEFAULT_ROOM);
     }
 
     /**
-     * Returns the room this general practitioner consults from.
+     * Returns the consulting room.
      *
-     * @return the consulting room, never empty
+     * @return the room, for example "Room 4"
      */
     public String getClinicRoom() {
         return clinicRoom;
     }
 
     /**
-     * Returns the kind of health professional this object is.
-     *
-     * <p>This is the method the parent class left abstract. It is what makes a
-     * list of health professionals print the correct type on every line
-     * without the printing code asking what each object is.</p>
+     * Returns the role of this object.
      *
      * @return "General Practitioner"
      */
@@ -88,13 +65,19 @@ public class GeneralPractitioner extends HealthProfessional implements Prescriba
     }
 
     /**
+     * Returns the department of this type.
+     *
+     * @return "General Medicine"
+     */
+    @Override
+    public String getDepartment() {
+        return "General Medicine";
+    }
+
+    /**
      * Returns the shared details plus the consulting room.
      *
-     * <p>The shared part is not rebuilt here: {@code super.toString()} already
-     * knows how to print it, and calling it keeps every type in the same
-     * layout. Only the room is appended, because only the room is new.</p>
-     *
-     * @return a multi-line description of this general practitioner
+     * @return a multi-line description of this doctor
      */
     @Override
     public String toString() {
@@ -103,11 +86,7 @@ public class GeneralPractitioner extends HealthProfessional implements Prescriba
     }
 
     /**
-     * Returns a one-paragraph introduction for a patient to read.
-     *
-     * <p>The consulting room belongs in the sentence because "where do I go"
-     * is the first question a patient asks, and the working days close it so
-     * the sentence also says when the doctor can be seen.</p>
+     * Returns a one-sentence introduction.
      *
      * @return a sentence describing this general practitioner
      */
@@ -120,13 +99,9 @@ public class GeneralPractitioner extends HealthProfessional implements Prescriba
     /**
      * Prescribes a medication to a patient.
      *
-     * <p>The message is returned rather than printed, so the caller decides
-     * where the sentence appears and the method stays usable from anywhere in
-     * the program.</p>
-     *
      * @param medication the name of the medication
-     * @param patientName the name of the patient receiving it
-     * @return a message describing the prescription
+     * @param patientName the name of the patient
+     * @return the sentence that describes the prescription
      */
     @Override
     public String prescribe(String medication, String patientName) {
